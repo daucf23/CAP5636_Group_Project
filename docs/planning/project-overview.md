@@ -54,7 +54,7 @@ Small language models are computationally accessible but often struggle with hal
 
 - Prefer **subset of Wikipedia**, not necessarily full 11.6 GB
 - Hardware: **UCF Newton first** (H100 preferred), student **RTX 5090 / 3080 Ti** backup, cloud only as contingency (~$50 soft cap)
-- Plan: Tier 0 smoke → two matched Tier 1 runs (~0.5–1B tokens each: Wikipedia + baseline)
+- Plan: Tier 0 smoke → **depth 8 @ ~0.5B** Wikipedia + matched baseline → optional **depth 12** scale-up
 - Details and forecast: [compute-budget.md](./compute-budget.md)
 
 ## Success criteria (draft)

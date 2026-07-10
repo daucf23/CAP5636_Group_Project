@@ -10,6 +10,7 @@ Goal: stay **simple and realistic**. Prefer a small NanoChat depth, a Wikipedia 
 | Factuality / hallucination benches | **Deferred** (not in v1) |
 | Primary dial | NanoChat `--depth` (auto-scales width, tokens, LR, etc.) |
 | Hardware posture | **Newton first**, student **5090 / 3080 Ti** as backup, **cloud only if blocked** |
+| First main depth | **Start at depth 8 (~0.5B tokens)**; attempt **depth 12 (~1B)** only after B+C succeed |
 
 ## Available hardware (team)
 
@@ -75,32 +76,41 @@ Wall time ≈ `tokens / tok_per_s` (plus eval/checkpoint overhead ~10–20%).
 | Wall time | **minutes–1 hour** |
 | Cloud $ | **$0** |
 
-### Run B — Main Wikipedia model (Tier 1)
+### Run B — Main Wikipedia model (Tier 1, start here)
 
 | Item | Value |
 | --- | --- |
-| Depth | **12** (fallback **8** if VRAM/queue painful) |
-| Tokens | **~0.5–1.0B** (cap explicitly; do not chase full dump) |
+| Depth | **8** first |
+| Tokens | **~0.5B** (explicit cap; subset Wikipedia) |
 | Data | Wikipedia subset sized to token budget; held-out articles for val |
-| Where | **Newton 1× H100** preferred; else **5090** |
-| Wall time (1B tokens) | H100: **~1–3 hours**; 5090: **~2–4 hours**; V100: **~6–14 hours**; 3080 Ti: **often impractical** at 1B |
-| Cloud $ if rented | **~$3–15** for a single A100/H100-class run (rate-dependent) |
+| Where | **Newton 1× H100** preferred; else **5090**; 3080 Ti only if heavily capped |
+| Wall time (~0.5B) | H100: **~0.5–2 hours**; 5090: **~1–2 hours**; V100: **~3–8 hours** |
+| Cloud $ if rented | **~$2–10** for a single A100/H100-class run |
+
+### Run B2 — Scale-up (only after B + C succeed)
+
+| Item | Value |
+| --- | --- |
+| Depth | **12** |
+| Tokens | **~0.5–1.0B** (prefer 1B if time/queue allow) |
+| Where | Same as Run B |
+| Wall time (1B) | H100: **~1–3 hours**; 5090: **~2–4 hours** |
 
 ### Run C — Matched-budget baseline (required for fair compare)
 
-Same depth, tokenizer, token budget, and eval set as Run B; different **data source** (general text) **or** shorter/random-init control if general data is hard.
+Same depth, tokenizer, token budget, and eval set as the Wikipedia run it pairs with (C8 with B, C12 with B2); different **data source** (general text) **or** shorter/random-init control if general data is hard.
 
 | Item | Value |
 | --- | --- |
-| Extra cost | ≈ **1× Run B** |
-| Where | Same machine class as Run B |
+| Extra cost | ≈ **1×** the paired Wikipedia run |
+| Where | Same machine class as that run |
 
 ### Run D — Optional ablation (only if A–C succeed)
 
 | Ablation | Extra compute |
 | --- | --- |
-| Token budgets 100M / 300M / 1B at fixed depth | ~0.1× + 0.3× + 1× of Run B (can reuse shorter prefixes of the long run if checkpointing allows) |
-| Depth 8 vs 12 | another ~0.5–1× Run B |
+| Token budgets 100M / 300M / 0.5B at depth 8 | Can often come from checkpoints of Run B |
+| Depth 12 scale-up | Covered by Run B2 + C12 |
 
 ## Resource plan (priority order)
 
@@ -114,13 +124,13 @@ Same depth, tokenizer, token budget, and eval set as Run B; different **data sou
 
 | Scenario | Hardware | Runs | Est. GPU-hours | Est. $ |
 | --- | --- | --- | --- | --- |
-| **Best case** | Newton H100 | A + B + C | ~5–10 GPU-h | **$0** |
-| **Likely case** | Newton + some 5090 | A local, B/C Newton or 5090 | ~8–20 GPU-h | **$0** |
-| **Backup case** | 5090 only | A + B + C @ 0.5–1B tokens | ~10–25 GPU-h | **$0** (electricity) |
-| **Contingency** | Cloud A100/H100 | B + C only | ~4–12 GPU-h | **~$10–40** |
+| **v1 minimum (committed)** | Newton H100 or 5090 | A + B(d8@0.5B) + C8 | **~3–8 GPU-h** | **$0** (or ~$5–20 cloud) |
+| **v1 + scale-up** | same | above + B2(d12) + C12 | **~8–20 GPU-h** | **$0** (or ~$15–40 cloud) |
+| **3080 Ti only** | 3080 Ti | A + smaller d8 (e.g. 100–200M tokens) | longer wall time | **$0** |
 | **Avoid for v1** | 8×H100 NanoChat speedrun | full d26 | ~20–25 GPU-h on 8 GPUs | **~$50–70** on-demand |
 
-**Bottom line:** For the course project, plan on **two serious single-GPU runs (~0.5–1B tokens each)** plus a tiny smoke test. That is well within Newton H100 or a 5090. The 3080 Ti is for development, not the main 1B-token run. Cloud is a **forecasted contingency (~$10–50)**, not the default.
+**Bottom line:** Commit to **depth 8 @ ~0.5B tokens** twice (Wikipedia + baseline). Treat **depth 12** as a scale-up only after that pair works. Cloud remains a **~$50 soft contingency**, not the default.
+
 
 ## Matched-budget rule
 
@@ -135,5 +145,5 @@ For Wikipedia vs baseline, match:
 
 - Confirm Newton account status / faculty sponsor / queue access (`highgpu` needed or not)
 - Soft cloud cap confirmation (proposed **$50**)
-- Exact baseline corpus for Run C
-- Whether first main run is depth **8 @ 0.5B** (safer) or **12 @ 1B** (preferred if H100/5090)
+- Exact baseline corpus for Run C8
+- Whether scale-up to d12 is in-scope if d8 results look good before the deadline
