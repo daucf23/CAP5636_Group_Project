@@ -18,27 +18,27 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Train from scratch vs continue? | **Prefer A (from scratch)** for a clean story; treat **continued pretrain / light fine-tune from a small NanoChat checkpoint** as the more realistic fallback if scratch quality is weak in 3 weeks. Undecided until Tier 0 + first d8 attempt. |
 | — | Tokenizer (v1 default)? | **Reuse NanoChat tokenizer as-is** (simplest; keeps continue-pretrain fallback viable). Revisit only if tok_eval on Wikipedia looks pathological. |
 | — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
-| — | Abstract milestone? | 400–600 word PDF via Webcourses; sections match our overview. Draft: [project-abstract-draft.md](./project-abstract-draft.md). Due date TBD. |
+| — | Abstract milestone? | **Already submitted** (original NanoWiki brief). Working copy: [project-abstract-draft.md](./project-abstract-draft.md). |
 
 ## Priority 1 — Scope still open
 
-1. **Abstract due date on Webcourses?**
+1. **What later deliverables does the course require** (final report length, presentation/demo, code freeze)?
 
-2. **What later deliverables does the course require** (final report length, presentation/demo, code freeze)?
-
-3. **What is explicitly out of scope for v1?**  
+2. **What is explicitly out of scope for v1?**  
    Draft non-goals are in the overview; confirm with the team.
 
 ## Priority 2 — Technical decisions
 
-4. **Newton access status?**  
+3. **Newton access status?**  
    Account ready? Faculty sponsor? Can we request 1× H100 easily, or do we need `highgpu`?
 
-5. **Confirm soft cloud contingency cap** (proposed **$50**).
+4. **Confirm soft cloud contingency cap** (proposed **$50**).
 
-6. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
+5. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
 
-7. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
+6. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
+
+7. **Repo layout for implementation** (vendor NanoChat vs submodule vs thin wrapper) — choose in design step.
 
 ## Priority 3 — Collaboration
 

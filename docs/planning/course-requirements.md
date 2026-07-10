@@ -10,7 +10,8 @@ Guidance extracted from the project abstract assignment. Update when later miles
 | Length | **400–600 words**, single-spaced |
 | Format | **PDF** via Webcourses by 11:59 pm on the due date |
 | Team | **2–3 members**; one submission; list all members |
-| Due date | **TBD** (confirm on Webcourses) |
+| Due date | **Already submitted** (team turned in the original NanoWiki abstract text) |
+| Status | Complete — remaining work is execution (data, train, eval, final deliverables) |
 
 ### Required sections
 

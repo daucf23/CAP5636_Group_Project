@@ -1,6 +1,6 @@
 # Project Abstract Draft (for Webcourses PDF)
 
-**Status:** Draft for team review — export to single-spaced PDF after edits.  
+**Status:** **Submitted** — the course abstract was already turned in (the original NanoWiki brief that started planning). This file is retained as an aligned working copy / archive, not a new submission.  
 **Target length:** 400–600 words (body).  
 **Course:** CAP 5636  
 

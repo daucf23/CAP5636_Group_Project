@@ -3,7 +3,7 @@
 **Course:** CAP 5636  
 **Title:** NanoWiki: Pretraining a Small Decoder-Only Transformer from Scratch on Curated Wikipedia Data  
 **Repository:** [daucf23/CAP5636_Group_Project](https://github.com/daucf23/CAP5636_Group_Project)  
-**Status:** Planning (problem statement captured; design pending)
+**Status:** Abstract submitted; moving to **implementation design** (then code)
 
 ## Team
 
@@ -73,7 +73,7 @@ Small language models are computationally accessible but often struggle with hal
 
 ## Proposed deliverables
 
-1. **Project abstract** (400–600 words, PDF) — draft in [project-abstract-draft.md](./project-abstract-draft.md); requirements in [course-requirements.md](./course-requirements.md)
+1. **Project abstract** — **submitted** (original brief); archive copy in [project-abstract-draft.md](./project-abstract-draft.md)
 2. Data preprocessing + train/eval scripts based on NanoChat
 3. Experiment results (tables + sample generations)
 4. Final report and presentation materials per later course requirements (TBD)
@@ -88,4 +88,4 @@ Small language models are computationally accessible but often struggle with hal
 
 ## Next step
 
-Team-review the abstract draft; confirm Webcourses due date; resolve remaining items in [open-questions.md](./open-questions.md).
+Approve an implementation design (repo layout + pipeline), then write the design spec / plan and start coding. Remaining open items: [open-questions.md](./open-questions.md).
