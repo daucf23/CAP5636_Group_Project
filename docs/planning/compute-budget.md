@@ -15,6 +15,7 @@ Goal: stay **simple and realistic**. Prefer a small NanoChat depth, a Wikipedia 
 | First main depth | **Start at depth 8 (~0.5B tokens)**; attempt **depth 12 (~1B)** only after B+C succeed |
 | v1 baseline | **C-short** (~5–25M tokens; not a full second general-text pretrain) |
 | Init strategy | **Prefer from-scratch** on Wikipedia; **continue-pretrain / light FT from a small NanoChat ckpt** is the realistic fallback |
+| Tokenizer (v1) | **Reuse NanoChat tokenizer as-is**; revisit only if Wikipedia tok_eval looks pathological |
 | Working window | **~3 weeks** guidance to v1 results + draft write-up |
 
 ## Available hardware (team)
