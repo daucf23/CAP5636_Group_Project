@@ -18,29 +18,31 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Train from scratch vs continue? | **Prefer A (from scratch)** for a clean story; treat **continued pretrain / light fine-tune from a small NanoChat checkpoint** as the more realistic fallback if scratch quality is weak in 3 weeks. Undecided until Tier 0 + first d8 attempt. |
 | — | Tokenizer (v1 default)? | **Reuse NanoChat tokenizer as-is** (simplest; keeps continue-pretrain fallback viable). Revisit only if tok_eval on Wikipedia looks pathological. |
 | — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
+| — | Abstract milestone? | 400–600 word PDF via Webcourses; sections match our overview. Draft: [project-abstract-draft.md](./project-abstract-draft.md). Due date TBD. |
 
 ## Priority 1 — Scope still open
 
-1. **What does the course require for submission?**  
-   (code, report length, presentation, dataset constraints, individual vs group grading)
+1. **Abstract due date on Webcourses?**
 
-2. **What is explicitly out of scope for v1?**  
+2. **What later deliverables does the course require** (final report length, presentation/demo, code freeze)?
+
+3. **What is explicitly out of scope for v1?**  
    Draft non-goals are in the overview; confirm with the team.
 
 ## Priority 2 — Technical decisions
 
-3. **Newton access status?**  
+4. **Newton access status?**  
    Account ready? Faculty sponsor? Can we request 1× H100 easily, or do we need `highgpu`?
 
-4. **Confirm soft cloud contingency cap** (proposed **$50**).
+5. **Confirm soft cloud contingency cap** (proposed **$50**).
 
-5. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
+6. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
 
-6. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
+7. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
 
 ## Priority 3 — Collaboration
 
-8. **Roles / ownership** (data, training, eval, report)?
+8. **Roles / ownership** (data, training, eval, report / abstract)?
 
 9. **Exact course deadlines** within / beyond the ~3-week working window?
 

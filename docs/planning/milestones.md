@@ -14,8 +14,10 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Record init preference: **scratch first**, continue-pretrain/FT as realistic fallback
 - [x] Default tokenizer: **reuse NanoChat as-is**
 - [x] Val split: **hold out by article ID**
+- [x] Capture abstract milestone requirements; draft 400–600 word abstract
+- [ ] Team-review abstract draft; confirm Webcourses due date
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
-- [ ] Confirm course deliverables and exact due date
+- [ ] Confirm later course deliverables (report / presentation)
 - [ ] Confirm v1 non-goals
 - [ ] Assign roles / ownership
 

@@ -73,10 +73,10 @@ Small language models are computationally accessible but often struggle with hal
 
 ## Proposed deliverables
 
-1. Problem statement and approach write-up (this overview → design spec)
+1. **Project abstract** (400–600 words, PDF) — draft in [project-abstract-draft.md](./project-abstract-draft.md); requirements in [course-requirements.md](./course-requirements.md)
 2. Data preprocessing + train/eval scripts based on NanoChat
 3. Experiment results (tables + sample generations)
-4. Final report and presentation materials per course requirements
+4. Final report and presentation materials per later course requirements (TBD)
 
 ## References
 
@@ -88,4 +88,4 @@ Small language models are computationally accessible but often struggle with hal
 
 ## Next step
 
-Resolve remaining items in [open-questions.md](./open-questions.md), especially compute access, exact baseline definition, and whether to add a dedicated factuality/hallucination check beyond perplexity.
+Team-review the abstract draft; confirm Webcourses due date; resolve remaining items in [open-questions.md](./open-questions.md).

@@ -13,6 +13,8 @@ Start here: [docs/planning/README.md](docs/planning/README.md)
 ## Quick links
 
 - [Project overview](docs/planning/project-overview.md)
+- [Project abstract draft](docs/planning/project-abstract-draft.md)
+- [Course requirements](docs/planning/course-requirements.md)
 - [Compute budget](docs/planning/compute-budget.md)
 - [Milestones](docs/planning/milestones.md)
 - [Open questions](docs/planning/open-questions.md)

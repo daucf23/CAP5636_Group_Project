@@ -9,6 +9,8 @@ These files are **guidance**: problem framing, how we intend to run experiments,
 | Document | Purpose |
 | --- | --- |
 | [project-overview.md](./project-overview.md) | Goals, scope, constraints, and success criteria |
+| [project-abstract-draft.md](./project-abstract-draft.md) | 400–600 word abstract draft for Webcourses PDF |
+| [course-requirements.md](./course-requirements.md) | Abstract milestone format, rubric, failure modes |
 | [compute-budget.md](./compute-budget.md) | Realistic depth / token / hardware tiers |
 | [milestones.md](./milestones.md) | Phased roadmap from planning through delivery |
 | [open-questions.md](./open-questions.md) | Decisions still needed from the team |
