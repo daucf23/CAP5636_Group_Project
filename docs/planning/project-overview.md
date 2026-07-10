@@ -41,7 +41,7 @@ Small language models are computationally accessible but often struggle with hal
 
 **Quantitative**
 
-- Validation loss / perplexity (or NanoChat bits-per-byte) on **article-ID** held-out Wikipedia articles
+- Validation **bits-per-byte (bpb)** on **article-ID** held-out Wikipedia articles (primary); loss/perplexity optional secondary
 - Compare Wikipedia-trained depth-8 model (**Run B**) vs **C-short** control (same arch/tokenizer/init/eval set; **not** equal token budget)
 
 **Qualitative**
@@ -63,7 +63,7 @@ Small language models are computationally accessible but often struggle with hal
 ## Success criteria (draft)
 
 - Reproducible training + eval pipeline from this repo
-- Clear baseline vs Wikipedia-adapted comparison (loss/perplexity + qualitative samples)
+- Clear baseline vs Wikipedia-adapted comparison (**bpb** + qualitative samples)
 - Documented limitations (especially: perplexity ≠ hallucination; compute/data caps)
 
 ## Non-goals (draft — confirm)
