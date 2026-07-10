@@ -1,6 +1,6 @@
 # Milestones
 
-High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines and roles are set.
+High-level phases for **NanoWiki**. Working target: **~3 weeks** to v1 (d8 Wikipedia + cheap control + draft results). Dates/owners TBD once syllabus deadlines and roles are set.
 
 ## M0 — Planning and organization (current)
 
@@ -10,9 +10,10 @@ High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines
 - [x] Lock v1 eval to simple metrics; draft compute tiers
 - [x] Inventory hardware (Newton + 5090 + 3080 Ti) and draft resource forecast
 - [x] Pick first main run shape: **depth 8 @ ~0.5B**, then maybe depth 12
+- [x] Lock v1 baseline to **cheap short-train / random-init** (3-week path)
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
-- [ ] Lock matched-budget baseline definition for Run C8
-- [ ] Confirm course deliverables and deadlines
+- [ ] Pick C0 vs C-short for the control
+- [ ] Confirm course deliverables and exact due date
 - [ ] Lock v1 non-goals
 - [ ] Assign roles / ownership
 
@@ -36,15 +37,15 @@ High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines
 
 **Exit criteria:** Reproducible data prep + a short training run that logs loss.
 
-## M3 — Experiments
+## M3 — Experiments (3-week critical path)
 
-- [ ] Run Wikipedia-adapted training to the agreed token/step budget
-- [ ] Run baseline comparison (matched budget where possible)
-- [ ] Optional ablations: data size and/or training duration
-- [ ] Quantitative eval: val loss / perplexity
+- [ ] Run B: Wikipedia d8 @ ~0.5B tokens
+- [ ] Run C: cheap short-train or init-only control (same arch / tokenizer / Wiki eval)
+- [ ] Quantitative eval: val loss / perplexity (bpb)
 - [ ] Qualitative eval: fixed encyclopedic prompt sheet + sample generations
+- [ ] Optional (only if ahead): C-full general-text matched run and/or d12 scale-up
 
-**Exit criteria:** Tables + sample outputs comparing baseline vs Wikipedia model.
+**Exit criteria:** Tables + sample outputs comparing control vs Wikipedia-trained d8 model.
 
 ## M4 — Report and submission
 

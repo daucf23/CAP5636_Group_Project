@@ -23,8 +23,8 @@ Small language models are computationally accessible but often struggle with hal
 
 1. Use **NanoChat** ([karpathy/nanochat](https://github.com/karpathy/nanochat)) — a minimal GPT-style decoder-only transformer for autoregressive LM — as the training codebase.
 2. Pretrain (or continue-pretrain) a small model on curated Wikipedia text.
-3. Compare against a baseline trained on general text and/or the untuned NanoChat / NanoGPT-style model.
-4. Optionally ablate **data size** and/or **training duration** (steps/tokens) to study scaling within the Wikipedia-only setting.
+3. Compare against a **cheap control** first: same architecture, short-train or random-init (fits ~3-week timeline). Defer a full matched general-text pretrain if time remains.
+4. Optionally scale to depth 12 and/or ablate data size / training duration after the d8 run works.
 
 ## Data
 
@@ -54,7 +54,7 @@ Small language models are computationally accessible but often struggle with hal
 
 - Prefer **subset of Wikipedia**, not necessarily full 11.6 GB
 - Hardware: **UCF Newton first** (H100 preferred), student **RTX 5090 / 3080 Ti** backup, cloud only as contingency (~$50 soft cap)
-- Plan: Tier 0 smoke → **depth 8 @ ~0.5B** Wikipedia + matched baseline → optional **depth 12** scale-up
+- Plan (~3 weeks): Tier 0 smoke → **depth 8 @ ~0.5B** Wikipedia → **cheap short/init control** → write-up; optional general-text baseline or depth 12 only if ahead
 - Details and forecast: [compute-budget.md](./compute-budget.md)
 
 ## Success criteria (draft)

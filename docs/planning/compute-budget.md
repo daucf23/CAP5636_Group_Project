@@ -11,6 +11,8 @@ Goal: stay **simple and realistic**. Prefer a small NanoChat depth, a Wikipedia 
 | Primary dial | NanoChat `--depth` (auto-scales width, tokens, LR, etc.) |
 | Hardware posture | **Newton first**, student **5090 / 3080 Ti** as backup, **cloud only if blocked** |
 | First main depth | **Start at depth 8 (~0.5B tokens)**; attempt **depth 12 (~1B)** only after B+C succeed |
+| v1 baseline | **Short-train / random-init control** (not a full second general-text pretrain) |
+| Working window | **~3 weeks** to v1 results + draft write-up |
 
 ## Available hardware (team)
 
@@ -96,14 +98,20 @@ Wall time ≈ `tokens / tok_per_s` (plus eval/checkpoint overhead ~10–20%).
 | Where | Same as Run B |
 | Wall time (1B) | H100: **~1–3 hours**; 5090: **~2–4 hours** |
 
-### Run C — Matched-budget baseline (required for fair compare)
+### Run C — Cheap control baseline (v1 committed)
 
-Same depth, tokenizer, token budget, and eval set as the Wikipedia run it pairs with (C8 with B, C12 with B2); different **data source** (general text) **or** shorter/random-init control if general data is hard.
+For the **3-week / cheaper** path, do **not** train a full second general-text model. Use a **short-train or random-init control** with the **same architecture, tokenizer, and Wikipedia eval set** as Run B.
 
 | Item | Value |
 | --- | --- |
-| Extra cost | ≈ **1×** the paired Wikipedia run |
-| Where | Same machine class as that run |
+| Options | **C0:** init-only (0 train steps) eval + samples; **C-short:** ~1–5% of Run B tokens (e.g. 5–25M) on Wikipedia or generic text |
+| Extra cost | **≪ 1× Run B** (minutes to ~30 min on H100/5090) |
+| Trade-off | Weaker causal claim than a matched general-text pretrain; still shows “trained Wikipedia model vs untrained/undertrained twin” |
+| Deferred | Full matched general-text Run C (same 0.5B tokens, non-Wiki data) — only if time remains after week 2 |
+
+### Run C-full — Deferred matched general-text baseline
+
+Same depth/tokens/tokenizer/eval as Run B, but trained on NanoChat default / FineWeb-style general text. Schedule only if d8 Wikipedia run finishes early.
 
 ### Run D — Optional ablation (only if A–C succeed)
 
@@ -124,12 +132,13 @@ Same depth, tokenizer, token budget, and eval set as the Wikipedia run it pairs 
 
 | Scenario | Hardware | Runs | Est. GPU-hours | Est. $ |
 | --- | --- | --- | --- | --- |
-| **v1 minimum (committed)** | Newton H100 or 5090 | A + B(d8@0.5B) + C8 | **~3–8 GPU-h** | **$0** (or ~$5–20 cloud) |
-| **v1 + scale-up** | same | above + B2(d12) + C12 | **~8–20 GPU-h** | **$0** (or ~$15–40 cloud) |
+| **v1 minimum (committed, 3-week)** | Newton H100 or 5090 | A + B(d8@0.5B) + C-short/C0 | **~2–6 GPU-h** | **$0** (or ~$5–15 cloud) |
+| **v1 + full general baseline** | same | above + C-full @ 0.5B | **~4–10 GPU-h** | **$0** (or ~$10–25 cloud) |
+| **v1 + d12 scale-up** | same | above + B2 + control | **~8–20 GPU-h** | **$0** (or ~$15–40 cloud) |
 | **3080 Ti only** | 3080 Ti | A + smaller d8 (e.g. 100–200M tokens) | longer wall time | **$0** |
 | **Avoid for v1** | 8×H100 NanoChat speedrun | full d26 | ~20–25 GPU-h on 8 GPUs | **~$50–70** on-demand |
 
-**Bottom line:** Commit to **depth 8 @ ~0.5B tokens** twice (Wikipedia + baseline). Treat **depth 12** as a scale-up only after that pair works. Cloud remains a **~$50 soft contingency**, not the default.
+**Bottom line:** For **~3 weeks**, commit to **one** serious train (**d8 @ ~0.5B Wikipedia**) plus a **cheap short/init control**. Defer full general-text matched pretrain and d12 until that lands. Cloud remains a **~$50 soft contingency**.
 
 
 ## Matched-budget rule
@@ -141,9 +150,17 @@ For Wikipedia vs baseline, match:
 3. Tokenizer  
 4. Held-out Wikipedia eval set  
 
+## 3-week sketch (planning only)
+
+| Week | Focus |
+| --- | --- |
+| **1** | Newton/local setup; data download + preprocess; Tier 0 smoke; freeze prompt sheet |
+| **2** | Run B (d8 @ ~0.5B); Run C-short/C0; val loss + samples |
+| **3** | Tables/plots; write-up; optional C-full or d12 only if ahead of schedule |
+
 ## Still needed from the team
 
 - Confirm Newton account status / faculty sponsor / queue access (`highgpu` needed or not)
 - Soft cloud cap confirmation (proposed **$50**)
-- Exact baseline corpus for Run C8
-- Whether scale-up to d12 is in-scope if d8 results look good before the deadline
+- Prefer **C0** (init-only) vs **C-short** (~1–5% tokens) for the cheap control
+- Exact course due date relative to this 3-week window
