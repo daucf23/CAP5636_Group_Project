@@ -3,7 +3,7 @@
 **Course:** CAP 5636  
 **Title:** NanoWiki: Pretraining a Small Decoder-Only Transformer from Scratch on Curated Wikipedia Data  
 **Repository:** [daucf23/CAP5636_Group_Project](https://github.com/daucf23/CAP5636_Group_Project)  
-**Status:** Abstract submitted; moving to **implementation design** (then code)
+**Status:** Abstract submitted; **design spec drafted** for review → then implementation plan
 
 ## Team
 
@@ -41,15 +41,17 @@ Small language models are computationally accessible but often struggle with hal
 
 **Quantitative**
 
-- Validation loss / perplexity (or NanoChat bits-per-byte) on held-out Wikipedia articles
-- Compare Wikipedia-adapted model vs a **matched-budget** baseline
+- Validation loss / perplexity (or NanoChat bits-per-byte) on **article-ID** held-out Wikipedia articles
+- Compare Wikipedia-trained depth-8 model (**Run B**) vs **C-short** control (same arch/tokenizer/init/eval set; **not** equal token budget)
 
 **Qualitative**
 
-- Fixed encyclopedic prompts → compare coherence, repetition, neutral tone, Wikipedia-like structure
-- Desired outcome: lower Wikipedia perplexity and more encyclopedic completions without excessive repetition or degeneration
+- Fixed encyclopedic prompt sheet → compare coherence, repetition, neutral tone, Wikipedia-like structure
+- Desired outcome: lower Wikipedia val loss/bpb and more encyclopedic completions without excessive repetition or degeneration
 
-**Deferred (not v1):** dedicated hallucination / closed-book QA / external judge metrics. Motivation still mentions factuality; we will discuss that limitation explicitly in the report.
+**Deferred (not v1):** dedicated hallucination / closed-book QA / external judge metrics. Motivation still mentions factuality; state that limitation explicitly in the write-up.
+
+**Design spec:** [2026-07-10-nanowiki-design.md](../superpowers/specs/2026-07-10-nanowiki-design.md)
 
 ## Compute posture (draft)
 
@@ -88,4 +90,4 @@ Small language models are computationally accessible but often struggle with hal
 
 ## Next step
 
-Approve an implementation design (repo layout + pipeline), then write the design spec / plan and start coding. Remaining open items: [open-questions.md](./open-questions.md).
+Review the design spec: [2026-07-10-nanowiki-design.md](../superpowers/specs/2026-07-10-nanowiki-design.md). Remaining open items: [open-questions.md](./open-questions.md).

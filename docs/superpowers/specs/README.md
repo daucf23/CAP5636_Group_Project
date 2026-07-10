@@ -1,5 +1,5 @@
 # Design specs
 
-Approved design documents will be saved here as:
+Approved (or in-review) design documents:
 
-`YYYY-MM-DD-<topic>-design.md`
+- [2026-07-10-nanowiki-design.md](./2026-07-10-nanowiki-design.md) — NanoWiki thin-wrapper design (in review)
