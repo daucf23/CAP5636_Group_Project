@@ -124,7 +124,7 @@ Same depth/tokens/tokenizer/eval as Run B, but trained on NanoChat default / Fin
 
 1. **Get Newton access early** (ARCC registration, advisor/faculty sponsorship if required, Slurm tutorial, storage quota).
 2. **Tier 0 on 3080 Ti or 5090** while Newton account/queue is sorted — prove the pipeline.
-3. **Submit Run B + Run C on Newton H100** (1 GPU each, sequential or two jobs). Prefer dual-H100 nodes over waiting for `highgpu` 8-GPU nodes.
+3. **Submit Run B on Newton H100** (1 GPU). Run C0/C-short on the same job or a short follow-up. Prefer dual-H100 nodes over waiting for `highgpu` 8-GPU nodes.
 4. **Use 5090** if Newton queue wait > ~1–2 days or software modules block us.
 5. **Rent cloud** only if both Newton and student GPUs cannot finish B+C before a course checkpoint — budget a **soft cap of ~$50** for contingency (enough for several single-GPU runs, not an 8×H100 speedrun).
 
@@ -141,15 +141,11 @@ Same depth/tokens/tokenizer/eval as Run B, but trained on NanoChat default / Fin
 **Bottom line:** For **~3 weeks**, commit to **one** serious train (**d8 @ ~0.5B Wikipedia**) plus a **cheap short/init control**. Defer full general-text matched pretrain and d12 until that lands. Cloud remains a **~$50 soft contingency**.
 
 
-## Matched-budget rule
+## Comparison rule (v1 vs stretch)
 
-For Wikipedia vs baseline, match:
+**v1 (cheap control):** match architecture, tokenizer, and held-out Wikipedia eval set. Do **not** require equal training tokens.
 
-1. Model depth / architecture  
-2. Training tokens (or FLOPs)  
-3. Tokenizer  
-4. Held-out Wikipedia eval set  
-
+**Stretch (C-full / d12):** also match training tokens (or FLOPs) and document the data source.
 ## 3-week sketch (planning only)
 
 | Week | Focus |
