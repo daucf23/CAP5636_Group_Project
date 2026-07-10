@@ -2,7 +2,7 @@
 
 High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wikipedia + C-short + draft results). These milestones organize work and compute/time expectations; adjust as hardware and course dates firm up.
 
-## M0 — Planning and organization (current)
+## M0 — Planning and organization (wrapping up)
 
 - [x] Create temporary planning branch
 - [x] Add planning document scaffold
@@ -14,14 +14,14 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Record init preference: **scratch first**, continue-pretrain/FT as realistic fallback
 - [x] Default tokenizer: **reuse NanoChat as-is**
 - [x] Val split: **hold out by article ID**
-- [x] Capture abstract milestone requirements; draft 400–600 word abstract
-- [ ] Team-review abstract draft; confirm Webcourses due date
+- [x] Capture abstract requirements; abstract **already submitted**
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
 - [ ] Confirm later course deliverables (report / presentation)
 - [ ] Confirm v1 non-goals
 - [ ] Assign roles / ownership
+- [ ] Approve implementation design → write spec/plan
 
-**Exit criteria:** Overview + open questions resolved enough to write a design spec.
+**Exit criteria:** Design approved; ready to implement.
 
 ## M1 — Design
 
