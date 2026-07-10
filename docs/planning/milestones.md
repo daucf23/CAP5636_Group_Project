@@ -11,6 +11,7 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Inventory hardware (Newton + 5090 + 3080 Ti) and draft resource forecast
 - [x] Pick first main run shape: **depth 8 @ ~0.5B**, then maybe depth 12
 - [x] Lock v1 baseline to **C-short** (~5–25M tokens; 3-week path)
+- [x] Record init preference: **scratch first**, continue-pretrain/FT as realistic fallback
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
 - [ ] Confirm course deliverables and exact due date
 - [ ] Confirm v1 non-goals

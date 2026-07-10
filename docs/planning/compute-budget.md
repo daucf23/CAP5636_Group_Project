@@ -14,6 +14,7 @@ Goal: stay **simple and realistic**. Prefer a small NanoChat depth, a Wikipedia 
 | Hardware posture | **Newton first**, student **5090 / 3080 Ti** as backup, **cloud only if blocked** |
 | First main depth | **Start at depth 8 (~0.5B tokens)**; attempt **depth 12 (~1B)** only after B+C succeed |
 | v1 baseline | **C-short** (~5–25M tokens; not a full second general-text pretrain) |
+| Init strategy | **Prefer from-scratch** on Wikipedia; **continue-pretrain / light FT from a small NanoChat ckpt** is the realistic fallback |
 | Working window | **~3 weeks** guidance to v1 results + draft write-up |
 
 ## Available hardware (team)
@@ -87,9 +88,13 @@ Wall time ≈ `tokens / tok_per_s` (plus eval/checkpoint overhead ~10–20%).
 | Depth | **8** first |
 | Tokens | **~0.5B** (explicit cap; subset Wikipedia) |
 | Data | Wikipedia subset sized to token budget; held-out articles for val |
+| Init (preferred) | **From scratch** — cleanest “Wikipedia pretraining” story |
+| Init (fallback) | **Continue-pretrain / light FT** from a small NanoChat checkpoint if scratch generations are too degenerate for a 3-week report |
 | Where | **Newton 1× H100** preferred; else **5090**; 3080 Ti only if heavily capped |
 | Wall time (~0.5B) | H100: **~0.5–2 hours**; 5090: **~1–2 hours**; V100: **~3–8 hours** |
 | Cloud $ if rented | **~$2–10** for a single A100/H100-class run |
+
+**Guidance on A vs fallback:** Try scratch first at d8. If val bpb drops but samples stay unusable, switch the *same* token budget to continue-pretrain and document the base checkpoint. C-short should use the **same init recipe** (scratch twin vs same base ckpt + short train) so the comparison stays fair.
 
 ### Run B2 — Scale-up (only after B + C succeed)
 
@@ -163,3 +168,4 @@ Same depth/tokens/tokenizer/eval as Run B, but trained on NanoChat default / Fin
 - Soft cloud cap (proposed **$50**)
 - Exact course due date relative to this 3-week window
 - Whether C-short’s brief train uses a tiny generic shard or a tiny Wikipedia shard
+- Decision rule for switching to continue-pretrain (e.g. after first d8 scratch run: samples unusable / val plateau)

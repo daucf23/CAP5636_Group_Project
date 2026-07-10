@@ -22,8 +22,8 @@ Small language models are computationally accessible but often struggle with hal
 ## Approach
 
 1. Use **NanoChat** ([karpathy/nanochat](https://github.com/karpathy/nanochat)) — a minimal GPT-style decoder-only transformer for autoregressive LM — as the training codebase.
-2. Pretrain (or continue-pretrain) a small model on curated Wikipedia text.
-3. Compare against **C-short**: same architecture, brief train (~5–25M tokens). Defer a full matched general-text pretrain if time remains.
+2. Prefer **from-scratch** pretraining on curated Wikipedia; keep **continue-pretrain / light fine-tune from a small NanoChat checkpoint** as a realistic fallback if scratch quality is too weak in ~3 weeks.
+3. Compare against **C-short**: same architecture/init recipe, brief train (~5–25M tokens). Defer a full matched general-text pretrain if time remains.
 4. Optionally scale to depth 12 and/or ablate data size / training duration after the d8 run works.
 
 ## Data
