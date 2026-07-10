@@ -35,7 +35,7 @@ Small language models are computationally accessible but often struggle with hal
 | Split | `20231101.en` |
 | Size | ~11.6 GB English text (2023 dump-derived) |
 | License | CC BY-SA 3.0 and GFDL (original Wikipedia content) |
-| Prep | Preprocess for NanoChat pretraining; create a held-out validation set of unseen articles |
+| Prep | Preprocess for NanoChat pretraining; **hold out validation by article ID** (unseen articles) |
 
 ## Evaluation plan (v1 — keep simple)
 

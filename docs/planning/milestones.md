@@ -13,6 +13,7 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Lock v1 baseline to **C-short** (~5–25M tokens; 3-week path)
 - [x] Record init preference: **scratch first**, continue-pretrain/FT as realistic fallback
 - [x] Default tokenizer: **reuse NanoChat as-is**
+- [x] Val split: **hold out by article ID**
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
 - [ ] Confirm course deliverables and exact due date
 - [ ] Confirm v1 non-goals
@@ -32,7 +33,7 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 ## M2 — Data and training scaffold
 
 - [ ] Download / stream `wikimedia/wikipedia` (`20231101.en`) with license notes
-- [ ] Preprocess text for NanoChat; build train / held-out article splits
+- [ ] Preprocess text for NanoChat; build train / **article-ID** held-out splits
 - [ ] Wire NanoChat training config for a small Wikipedia run
 - [ ] Smoke-test: short train + val loss logging
 

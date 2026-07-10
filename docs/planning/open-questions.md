@@ -17,6 +17,7 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Timeline? | Target **~3 weeks** to a complete v1 (pipeline + d8 Wikipedia run + C-short + eval/report draft) |
 | — | Train from scratch vs continue? | **Prefer A (from scratch)** for a clean story; treat **continued pretrain / light fine-tune from a small NanoChat checkpoint** as the more realistic fallback if scratch quality is weak in 3 weeks. Undecided until Tier 0 + first d8 attempt. |
 | — | Tokenizer (v1 default)? | **Reuse NanoChat tokenizer as-is** (simplest; keeps continue-pretrain fallback viable). Revisit only if tok_eval on Wikipedia looks pathological. |
+| — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
 
 ## Priority 1 — Scope still open
 
@@ -33,7 +34,7 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 
 4. **Confirm soft cloud contingency cap** (proposed **$50**).
 
-5. **Validation split strategy:** by article ID / random articles? Target val size?
+5. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
 
 6. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
 
