@@ -20,29 +20,30 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
 | — | Abstract milestone? | **Already submitted** (original NanoWiki brief). Working copy: [project-abstract-draft.md](./project-abstract-draft.md). |
 | — | Repo / NanoChat integration? | **Thin wrapper**: NanoChat as submodule/pinned clone; this repo owns data prep, configs, eval, prompts. |
+| — | Work split? | **3 lanes:** Sahil=Data, Thomas=Train/infra, David=Eval/docs. See [team-work-split.md](./team-work-split.md). |
 
 ## Priority 1 — Scope still open
 
 1. **What later deliverables does the course require** (final report length, presentation/demo, code freeze)?
 
-2. **What is explicitly out of scope for v1?**  
-   Draft non-goals are in the overview; confirm with the team.
+2. **Confirm or swap lane owners** in [team-work-split.md](./team-work-split.md).
+
+3. **What is explicitly out of scope for v1?**  
+   Draft non-goals are in the overview / design spec; confirm with the team.
 
 ## Priority 2 — Technical decisions
 
-3. **Newton access status?**  
+4. **Newton access status?**  
    Account ready? Faculty sponsor? Can we request 1× H100 easily, or do we need `highgpu`?
 
-4. **Confirm soft cloud contingency cap** (proposed **$50**).
+5. **Confirm soft cloud contingency cap** (proposed **$50**).
 
-5. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
+6. **Val set size target** (default ~2% of articles in the working subset).
 
-6. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
+7. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
 
 ## Priority 3 — Collaboration
 
-8. **Roles / ownership** (data, training, eval, report / abstract)?
+8. **Exact course deadlines** within / beyond the ~3-week working window?
 
-9. **Exact course deadlines** within / beyond the ~3-week working window?
-
-10. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
+9. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)

@@ -13,6 +13,7 @@ Start here: [docs/planning/README.md](docs/planning/README.md)
 ## Quick links
 
 - [Design spec (in review)](docs/superpowers/specs/2026-07-10-nanowiki-design.md)
+- [Team work split](docs/planning/team-work-split.md)
 - [Project overview](docs/planning/project-overview.md)
 - [Project abstract draft](docs/planning/project-abstract-draft.md)
 - [Course requirements](docs/planning/course-requirements.md)

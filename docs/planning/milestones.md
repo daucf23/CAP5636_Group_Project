@@ -17,13 +17,13 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Capture abstract requirements; abstract **already submitted**
 - [x] Choose repo/integration: **thin NanoChat wrapper**
 - [x] Draft design spec with clear eval/data/train capture
-- [ ] Team review design spec
+- [x] Propose even 3-person work split (Data / Train / Eval-docs)
+- [ ] Team review design spec + confirm/swap lane owners
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
 - [ ] Confirm later course deliverables (report / presentation)
 - [ ] Confirm v1 non-goals
-- [ ] Assign roles / ownership
 
-**Exit criteria:** Design spec approved; implementation plan next.
+**Exit criteria:** Design spec approved; implementation plan next (tasks tagged by lane).
 
 ## M1 — Design
 

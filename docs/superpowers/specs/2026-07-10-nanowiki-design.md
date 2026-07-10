@@ -13,7 +13,7 @@ Build a **reproducible thin wrapper** around NanoChat that:
 1. Prepares a curated English Wikipedia subset with an **article-ID** validation holdout.
 2. Trains a **depth-8** decoder-only model for about **0.5B tokens** (prefer from scratch).
 3. Compares it to a **C-short** control (~5–25M tokens, same architecture/tokenizer/init recipe).
-4. Reports **held-out Wikipedia val loss / perplexity (or bits-per-byte)** plus **fixed-prompt qualitative samples**.
+4. Reports held-out Wikipedia validation **bits-per-byte (bpb)** plus **fixed-prompt qualitative samples**.
 
 This is guidance for execution and compute/time modeling, not a claim that perplexity equals factuality.
 
@@ -167,4 +167,4 @@ These can be filled during implementation without changing the design shape:
 - Exact val article count (~2% default)
 - Which tiny corpus C-short uses (generic vs Wiki slice)
 - Later course final-report / presentation requirements
-- Team role assignments
+- Confirm/swap lane owners in [team-work-split.md](../../planning/team-work-split.md) (proposed: Sahil=Data, Thomas=Train, David=Eval/docs)
