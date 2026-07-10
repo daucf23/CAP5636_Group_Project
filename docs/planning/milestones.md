@@ -1,6 +1,6 @@
 # Milestones
 
-High-level phases for **NanoWiki**. Working target: **~3 weeks** to v1 (d8 Wikipedia + cheap control + draft results). Dates/owners TBD once syllabus deadlines and roles are set.
+High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wikipedia + C-short + draft results). These milestones organize work and compute/time expectations; adjust as hardware and course dates firm up.
 
 ## M0 — Planning and organization (current)
 
@@ -10,11 +10,10 @@ High-level phases for **NanoWiki**. Working target: **~3 weeks** to v1 (d8 Wikip
 - [x] Lock v1 eval to simple metrics; draft compute tiers
 - [x] Inventory hardware (Newton + 5090 + 3080 Ti) and draft resource forecast
 - [x] Pick first main run shape: **depth 8 @ ~0.5B**, then maybe depth 12
-- [x] Lock v1 baseline to **cheap short-train / random-init** (3-week path)
+- [x] Lock v1 baseline to **C-short** (~5–25M tokens; 3-week path)
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
-- [ ] Pick C0 vs C-short for the control
 - [ ] Confirm course deliverables and exact due date
-- [ ] Lock v1 non-goals
+- [ ] Confirm v1 non-goals
 - [ ] Assign roles / ownership
 
 **Exit criteria:** Overview + open questions resolved enough to write a design spec.
@@ -40,12 +39,12 @@ High-level phases for **NanoWiki**. Working target: **~3 weeks** to v1 (d8 Wikip
 ## M3 — Experiments (3-week critical path)
 
 - [ ] Run B: Wikipedia d8 @ ~0.5B tokens
-- [ ] Run C: cheap short-train or init-only control (same arch / tokenizer / Wiki eval)
+- [ ] Run C-short: ~5–25M tokens control (same arch / tokenizer / Wiki eval)
 - [ ] Quantitative eval: val loss / perplexity (bpb)
 - [ ] Qualitative eval: fixed encyclopedic prompt sheet + sample generations
 - [ ] Optional (only if ahead): C-full general-text matched run and/or d12 scale-up
 
-**Exit criteria:** Tables + sample outputs comparing control vs Wikipedia-trained d8 model.
+**Exit criteria:** Tables + sample outputs comparing C-short vs Wikipedia-trained d8 model.
 
 ## M4 — Report and submission
 

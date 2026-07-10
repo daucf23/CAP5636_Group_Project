@@ -2,6 +2,8 @@
 
 Working documents for organizing **NanoWiki** (CAP 5636) before implementation.
 
+These files are **guidance**: problem framing, how we intend to run experiments, and models of compute/time — not frozen contracts. Update them as measurements and course constraints change.
+
 ## Documents
 
 | Document | Purpose |

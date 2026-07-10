@@ -1,6 +1,6 @@
 # Open Questions
 
-Track decisions the team still needs to make. Move answered items into [project-overview.md](./project-overview.md) or the design spec.
+Track decisions that still affect planning guidance. Move settled items into [project-overview.md](./project-overview.md) or the design spec. Planning docs model compute/time; they are not frozen contracts.
 
 ## Answered
 
@@ -13,8 +13,8 @@ Track decisions the team still needs to make. Move answered items into [project-
 | — | Compute posture? | Newton first; student 5090 / 3080 Ti backup; cloud contingency ~$50. See [compute-budget.md](./compute-budget.md). |
 | — | Hardware inventory? | UCF Newton (V100 + H100); student RTX 5090 + 3080 Ti; optional cloud rental |
 | — | First main run shape? | **Start depth 8 @ ~0.5B tokens**; scale to depth 12 only after matched d8 pair succeeds |
-| — | Baseline for v1? | **Short-train / random-init control** (cheaper; fits ~3-week timeline). Full general-text matched run deferred. |
-| — | Timeline? | Target **~3 weeks** to a complete v1 (pipeline + d8 Wikipedia run + simple baseline + eval/report draft) |
+| — | Baseline for v1? | **C-short:** brief train (~5–25M tokens, ~1–5% of Run B) on same arch/tokenizer; full general-text matched run deferred |
+| — | Timeline? | Target **~3 weeks** to a complete v1 (pipeline + d8 Wikipedia run + C-short + eval/report draft) |
 
 ## Priority 1 — Scope still open
 
@@ -37,12 +37,10 @@ Track decisions the team still needs to make. Move answered items into [project-
 
 7. **Validation split strategy:** by article ID / random articles? Target val size?
 
-8. **Short-train baseline definition:** how many steps/tokens for the control (e.g. init-only eval vs ~1–5% of Run B budget)?
-
 ## Priority 3 — Collaboration
 
-9. **Roles / ownership** (data, training, eval, report)?
+8. **Roles / ownership** (data, training, eval, report)?
 
-10. **Exact course deadlines** within / beyond the ~3-week working window?
+9. **Exact course deadlines** within / beyond the ~3-week working window?
 
-11. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
+10. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
