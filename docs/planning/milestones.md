@@ -7,8 +7,10 @@ High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines
 - [x] Create temporary planning branch
 - [x] Add planning document scaffold
 - [x] Capture problem statement, approach, data, and eval plan
+- [x] Lock v1 eval to simple metrics; draft compute tiers
+- [ ] Confirm available GPUs / dollar cap (picks Tier 1 depth + tokens)
 - [ ] Confirm course deliverables and deadlines
-- [ ] Lock baseline definition, compute plan, and v1 non-goals
+- [ ] Lock baseline definition and v1 non-goals
 - [ ] Assign roles / ownership
 
 **Exit criteria:** Overview + open questions resolved enough to write a design spec.

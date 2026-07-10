@@ -8,8 +8,9 @@ Track decisions the team still needs to make. Move answered items into [project-
 | --- | --- | --- |
 | 1 | Project topic / problem? | NanoWiki: pretrain small decoder-only LM on Wikipedia; study factual consistency / hallucination vs general baseline |
 | 4 | Language / libraries? | Python; NanoChat (GPT-style decoder-only); Hugging Face `wikimedia/wikipedia` |
-| 6 | Evaluation (high level)? | Val loss + perplexity on held-out Wikipedia; qualitative encyclopedic completions; optional step/token ablations |
+| 6 | Evaluation (v1)? | **Simple:** held-out Wikipedia val loss / perplexity (bpb) + fixed qualitative encyclopedic prompts. No dedicated hallucination bench in v1. |
 | 7 | Who is on the team? | Sahil Bhikha, Thomas Belyakov, David Almeida II |
+| — | Compute posture? | Stay realistic; subset Wikipedia; prefer Tier 0 smoke test → Tier 1 depth 8–12. See [compute-budget.md](./compute-budget.md). |
 
 ## Priority 1 — Scope still open
 
@@ -19,34 +20,28 @@ Track decisions the team still needs to make. Move answered items into [project-
 2. **What is explicitly out of scope for v1?**  
    Draft non-goals are in the overview; confirm with the team.
 
-3. **How do we operationalize “hallucination / factual inconsistency”?**  
-   Motivation emphasizes factuality, but the written eval plan is mostly perplexity + qualitative tone. Options:
-   - **A)** Stick to perplexity + qualitative encyclopedic prompts (simplest)
-   - **B)** Add a small closed-book QA / fact-check set (e.g. prompts with known Wikipedia answers)
-   - **C)** Use an external judge / checklist for factual claims in generations
-
 ## Priority 2 — Technical decisions
 
-4. **What is the exact baseline?**  
-   - Untuned / randomly initialized NanoChat (no Wikipedia)
-   - NanoChat pretrained on a general corpus (which corpus, matched token budget?)
-   - Both
+3. **What GPUs / cloud credits / campus machines do we have, and what is the soft dollar cap?**  
+   This picks Tier 1 depth + token budget. See [compute-budget.md](./compute-budget.md).
 
-5. **Compute: what GPUs / cloud / local machines do we have?**  
-   Full `20231101.en` (~11.6 GB) may need subsetting depending on hardware.
+4. **What is the exact baseline (matched token budget)?**  
+   - General-text NanoChat run (which corpus?)  
+   - Short-train / untuned control only  
+   - Both (only if compute allows)
 
-6. **Do we train from scratch on Wikipedia only, or continue from an existing NanoChat checkpoint?**
+5. **Do we train from scratch on Wikipedia only, or continue from an existing NanoChat checkpoint?**
 
-7. **Tokenizer:** reuse NanoChat’s tokenizer as-is, or train/adapt on Wikipedia?
+6. **Tokenizer:** reuse NanoChat’s tokenizer as-is, or train/adapt on Wikipedia?
 
-8. **Model size / context length / training budget** for the first runnable experiment?
+7. **First runnable experiment:** depth 8 or 12? Token cap (e.g. 100M / 500M / ~1B)?
 
-9. **Validation split strategy:** by article ID / random articles / time-based? Target val size?
+8. **Validation split strategy:** by article ID / random articles? Target val size?
 
 ## Priority 3 — Collaboration
 
-10. **Roles / ownership** (data, training, eval, report)?
+9. **Roles / ownership** (data, training, eval, report)?
 
-11. **Hard deadlines from the syllabus?**
+10. **Hard deadlines from the syllabus?**
 
-12. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
+11. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)

@@ -7,6 +7,7 @@ Working documents for organizing **NanoWiki** (CAP 5636) before implementation.
 | Document | Purpose |
 | --- | --- |
 | [project-overview.md](./project-overview.md) | Goals, scope, constraints, and success criteria |
+| [compute-budget.md](./compute-budget.md) | Realistic depth / token / hardware tiers |
 | [milestones.md](./milestones.md) | Phased roadmap from planning through delivery |
 | [open-questions.md](./open-questions.md) | Decisions still needed from the team |
 | [team-and-workflow.md](./team-and-workflow.md) | Collaboration norms and repo conventions |

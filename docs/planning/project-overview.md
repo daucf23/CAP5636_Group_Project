@@ -36,17 +36,25 @@ Small language models are computationally accessible but often struggle with hal
 | License | CC BY-SA 3.0 and GFDL (original Wikipedia content) |
 | Prep | Preprocess for NanoChat pretraining; create a held-out validation set of unseen articles |
 
-## Evaluation plan
+## Evaluation plan (v1 — keep simple)
 
 **Quantitative**
 
-- Validation loss and perplexity on held-out Wikipedia text
-- Compare Wikipedia-adapted model vs baseline (not trained on the Wikipedia subset) and/or vs models trained for different step/token budgets
+- Validation loss / perplexity (or NanoChat bits-per-byte) on held-out Wikipedia articles
+- Compare Wikipedia-adapted model vs a **matched-budget** baseline
 
 **Qualitative**
 
-- Fixed encyclopedic prompts → compare completions for coherence, repetition, neutral tone, and Wikipedia-like structure
+- Fixed encyclopedic prompts → compare coherence, repetition, neutral tone, Wikipedia-like structure
 - Desired outcome: lower Wikipedia perplexity and more encyclopedic completions without excessive repetition or degeneration
+
+**Deferred (not v1):** dedicated hallucination / closed-book QA / external judge metrics. Motivation still mentions factuality; we will discuss that limitation explicitly in the report.
+
+## Compute posture (draft)
+
+- Prefer **subset of Wikipedia**, not necessarily full 11.6 GB
+- Start with NanoChat **Tier 0 smoke test**, then **Tier 1 depth 8–12** if hardware allows
+- Details and cost sketch: [compute-budget.md](./compute-budget.md)
 
 ## Success criteria (draft)
 
@@ -57,8 +65,9 @@ Small language models are computationally accessible but often struggle with hal
 ## Non-goals (draft — confirm)
 
 - Not building a production chatbot or retrieval-augmented system
-- Not claiming SOTA factuality without dedicated hallucination / fact-checking benchmarks (unless we add them later)
-- Not training a large model; keep the model small and runnable for the team
+- Not claiming SOTA factuality without dedicated hallucination / fact-checking benchmarks in v1
+- Not running full NanoChat d26 8×H100 speedrun unless compute appears later
+- Keep the model small and runnable for the team
 
 ## Proposed deliverables
 
