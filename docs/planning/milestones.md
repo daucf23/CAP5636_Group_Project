@@ -1,44 +1,50 @@
 # Milestones
 
-High-level phases. Dates and owners should be filled in once the course schedule and team roles are known.
+High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines and roles are set.
 
 ## M0 — Planning and organization (current)
 
 - [x] Create temporary planning branch
 - [x] Add planning document scaffold
-- [ ] Agree on problem statement / topic
+- [x] Capture problem statement, approach, data, and eval plan
 - [ ] Confirm course deliverables and deadlines
-- [ ] Choose tech stack and repo layout
+- [ ] Lock baseline definition, compute plan, and v1 non-goals
 - [ ] Assign roles / ownership
 
-**Exit criteria:** Overview and open questions resolved enough to write a design spec.
+**Exit criteria:** Overview + open questions resolved enough to write a design spec.
 
 ## M1 — Design
 
-- [ ] Write design spec under `docs/superpowers/specs/`
-- [ ] Review and approve spec with the team
+- [ ] Write NanoWiki design spec under `docs/superpowers/specs/`
+- [ ] Cover: data pipeline, NanoChat integration, baseline(s), metrics, experiment matrix
+- [ ] Team review and approve spec
 - [ ] Write implementation plan under `docs/superpowers/plans/`
 
 **Exit criteria:** Approved spec + implementation plan committed.
 
-## M2 — Core implementation
+## M2 — Data and training scaffold
 
-- [ ] Scaffold project structure and tooling
-- [ ] Implement core functionality behind the agreed design
-- [ ] Add baseline tests / evaluation harness
+- [ ] Download / stream `wikimedia/wikipedia` (`20231101.en`) with license notes
+- [ ] Preprocess text for NanoChat; build train / held-out article splits
+- [ ] Wire NanoChat training config for a small Wikipedia run
+- [ ] Smoke-test: short train + val loss logging
 
-**Exit criteria:** Runnable core path with minimal evaluation.
+**Exit criteria:** Reproducible data prep + a short training run that logs loss.
 
-## M3 — Evaluation and polish
+## M3 — Experiments
 
-- [ ] Run experiments / demos against success criteria
-- [ ] Document results and limitations
-- [ ] Prepare report / presentation artifacts
+- [ ] Run Wikipedia-adapted training to the agreed token/step budget
+- [ ] Run baseline comparison (matched budget where possible)
+- [ ] Optional ablations: data size and/or training duration
+- [ ] Quantitative eval: val loss / perplexity
+- [ ] Qualitative eval: fixed encyclopedic prompt sheet + sample generations
+
+**Exit criteria:** Tables + sample outputs comparing baseline vs Wikipedia model.
+
+## M4 — Report and submission
+
+- [ ] Document results, limitations, and reproduction steps in README / report
+- [ ] Prepare presentation materials
+- [ ] Freeze release for grading and submit per course instructions
 
 **Exit criteria:** Course submission package ready.
-
-## M4 — Submission
-
-- [ ] Final README and reproduction steps
-- [ ] Tag or freeze release for grading
-- [ ] Submit per course instructions

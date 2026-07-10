@@ -2,32 +2,51 @@
 
 Track decisions the team still needs to make. Move answered items into [project-overview.md](./project-overview.md) or the design spec.
 
-## Priority 1 — Scope
+## Answered
 
-1. **What is the project topic / problem statement?**  
-   (e.g., specific AI/ML research question, system to build, paper reproduction, etc.)
+| # | Question | Answer |
+| --- | --- | --- |
+| 1 | Project topic / problem? | NanoWiki: pretrain small decoder-only LM on Wikipedia; study factual consistency / hallucination vs general baseline |
+| 4 | Language / libraries? | Python; NanoChat (GPT-style decoder-only); Hugging Face `wikimedia/wikipedia` |
+| 6 | Evaluation (high level)? | Val loss + perplexity on held-out Wikipedia; qualitative encyclopedic completions; optional step/token ablations |
+| 7 | Who is on the team? | Sahil Bhikha, Thomas Belyakov, David Almeida II |
 
-2. **What does the course require for submission?**  
+## Priority 1 — Scope still open
+
+1. **What does the course require for submission?**  
    (code, report length, presentation, dataset constraints, individual vs group grading)
 
-3. **What is explicitly out of scope for v1?**
+2. **What is explicitly out of scope for v1?**  
+   Draft non-goals are in the overview; confirm with the team.
 
-## Priority 2 — Technical approach
+3. **How do we operationalize “hallucination / factual inconsistency”?**  
+   Motivation emphasizes factuality, but the written eval plan is mostly perplexity + qualitative tone. Options:
+   - **A)** Stick to perplexity + qualitative encyclopedic prompts (simplest)
+   - **B)** Add a small closed-book QA / fact-check set (e.g. prompts with known Wikipedia answers)
+   - **C)** Use an external judge / checklist for factual claims in generations
 
-4. **Preferred language and major libraries?**  
-   (Python + PyTorch/TensorFlow/JAX, web stack, etc.)
+## Priority 2 — Technical decisions
 
-5. **Do we need training compute, APIs, or external datasets?**  
-   If yes, what access do we already have?
+4. **What is the exact baseline?**  
+   - Untuned / randomly initialized NanoChat (no Wikipedia)
+   - NanoChat pretrained on a general corpus (which corpus, matched token budget?)
+   - Both
 
-6. **How will we evaluate success?**  
-   (metrics, baselines, human demo, ablation study)
+5. **Compute: what GPUs / cloud / local machines do we have?**  
+   Full `20231101.en` (~11.6 GB) may need subsetting depending on hardware.
+
+6. **Do we train from scratch on Wikipedia only, or continue from an existing NanoChat checkpoint?**
+
+7. **Tokenizer:** reuse NanoChat’s tokenizer as-is, or train/adapt on Wikipedia?
+
+8. **Model size / context length / training budget** for the first runnable experiment?
+
+9. **Validation split strategy:** by article ID / random articles / time-based? Target val size?
 
 ## Priority 3 — Collaboration
 
-7. **Who is on the team, and what are the roles?**
+10. **Roles / ownership** (data, training, eval, report)?
 
-8. **What are the hard deadlines from the syllabus?**
+11. **Hard deadlines from the syllabus?**
 
-9. **Where should day-to-day discussion happen?**  
-   (GitHub Issues, Discord, Slack, etc.)
+12. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)

@@ -1,6 +1,8 @@
-# CAP 5636 Group Project
+# NanoWiki
 
-Course group project repository.
+**CAP 5636 Group Project** — Pretraining a small decoder-only transformer from scratch on curated Wikipedia data.
+
+**Team:** Sahil Bhikha, Thomas Belyakov, David Almeida II
 
 ## Status
 
@@ -14,3 +16,7 @@ Start here: [docs/planning/README.md](docs/planning/README.md)
 - [Milestones](docs/planning/milestones.md)
 - [Open questions](docs/planning/open-questions.md)
 - [Team and workflow](docs/planning/team-and-workflow.md)
+
+## One-line summary
+
+Train a NanoChat-style small LM on Hugging Face `wikimedia/wikipedia` (`20231101.en`) and compare Wikipedia perplexity and encyclopedic generation quality against a non-Wikipedia / untuned baseline.
