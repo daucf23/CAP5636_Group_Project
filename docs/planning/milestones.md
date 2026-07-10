@@ -15,6 +15,7 @@ High-level phases for **NanoWiki**. Guidance target: **~3 weeks** to v1 (d8 Wiki
 - [x] Default tokenizer: **reuse NanoChat as-is**
 - [x] Val split: **hold out by article ID**
 - [x] Capture abstract requirements; abstract **already submitted**
+- [x] Choose repo/integration: **thin NanoChat wrapper**
 - [ ] Confirm Newton access / queue plan and cloud contingency cap
 - [ ] Confirm later course deliverables (report / presentation)
 - [ ] Confirm v1 non-goals

@@ -19,6 +19,7 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Tokenizer (v1 default)? | **Reuse NanoChat tokenizer as-is** (simplest; keeps continue-pretrain fallback viable). Revisit only if tok_eval on Wikipedia looks pathological. |
 | — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
 | — | Abstract milestone? | **Already submitted** (original NanoWiki brief). Working copy: [project-abstract-draft.md](./project-abstract-draft.md). |
+| — | Repo / NanoChat integration? | **Thin wrapper**: NanoChat as submodule/pinned clone; this repo owns data prep, configs, eval, prompts. |
 
 ## Priority 1 — Scope still open
 
@@ -37,8 +38,6 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 5. **Val set size target** (e.g. ~1–2% of the Wikipedia subset, or a fixed N articles)?
 
 6. **If fallback to continue-pretrain:** which checkpoint / depth, and how do we keep C-short comparable?
-
-7. **Repo layout for implementation** (vendor NanoChat vs submodule vs thin wrapper) — choose in design step.
 
 ## Priority 3 — Collaboration
 
