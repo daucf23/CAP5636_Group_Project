@@ -1,5 +1,13 @@
 # Team and Workflow
 
+## Team
+
+- Sahil Bhikha
+- Thomas Belyakov
+- David Almeida II
+
+Roles (data / training / eval / report) still TBD — see [open-questions.md](./open-questions.md).
+
 ## Branching
 
 - `main` — stable, submission-ready history

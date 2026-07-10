@@ -1,6 +1,6 @@
 # Project Planning
 
-Working documents for organizing the CAP 5636 Group Project before implementation.
+Working documents for organizing **NanoWiki** (CAP 5636) before implementation.
 
 ## Documents
 
