@@ -7,13 +7,19 @@
 
 ## Team
 
-| Member | Role |
-| --- | --- |
-| Sahil Bhikha | **Data** — Wikipedia prep, article-ID split, shards |
-| Thomas Belyakov | **Train / infra** — NanoChat pin, configs, Run A/B/C-short |
-| David Almeida II | **Eval / docs** — bpb + prompts, results, README/report |
+- Sahil Bhikha
+- Thomas Belyakov
+- David Almeida II
 
-Details: [team-work-split.md](./team-work-split.md) (swap lanes if preferred).
+**Work split (lanes only, people not assigned yet):**
+
+| Lane | Focus |
+| --- | --- |
+| **A — Data** | Wikipedia prep, article-ID split, shards |
+| **B — Train / infra** | NanoChat pin, configs, Run A/B/C-short |
+| **C — Eval / docs** | bpb + prompts, results, README/report |
+
+Details: [team-work-split.md](./team-work-split.md).
 
 ## Problem and motivation
 

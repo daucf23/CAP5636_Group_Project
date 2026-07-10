@@ -20,13 +20,13 @@ Track decisions that still affect planning guidance. Move settled items into [pr
 | — | Val split? | **Hold out by article ID** (unseen articles). Target size TBD (~1–5% of used subset or a fixed article count). |
 | — | Abstract milestone? | **Already submitted** (original NanoWiki brief). Working copy: [project-abstract-draft.md](./project-abstract-draft.md). |
 | — | Repo / NanoChat integration? | **Thin wrapper**: NanoChat as submodule/pinned clone; this repo owns data prep, configs, eval, prompts. |
-| — | Work split? | **3 lanes:** Sahil=Data, Thomas=Train/infra, David=Eval/docs. See [team-work-split.md](./team-work-split.md). |
+| — | Work split? | **3 unassigned lanes:** A=Data, B=Train/infra, C=Eval/docs. See [team-work-split.md](./team-work-split.md). People not assigned yet. |
 
 ## Priority 1 — Scope still open
 
 1. **What later deliverables does the course require** (final report length, presentation/demo, code freeze)?
 
-2. **Confirm or swap lane owners** in [team-work-split.md](./team-work-split.md).
+2. **Assign people to lanes A / B / C** when ready ([team-work-split.md](./team-work-split.md)).
 
 3. **What is explicitly out of scope for v1?**  
    Draft non-goals are in the overview / design spec; confirm with the team.

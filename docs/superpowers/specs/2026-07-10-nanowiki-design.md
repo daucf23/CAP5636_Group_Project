@@ -167,4 +167,4 @@ These can be filled during implementation without changing the design shape:
 - Exact val article count (~2% default)
 - Which tiny corpus C-short uses (generic vs Wiki slice)
 - Later course final-report / presentation requirements
-- Confirm/swap lane owners in [team-work-split.md](../../planning/team-work-split.md) (proposed: Sahil=Data, Thomas=Train, David=Eval/docs)
+- Confirm people → lanes A/B/C in [team-work-split.md](../../planning/team-work-split.md) when the team is ready (lanes defined; names not assigned yet)

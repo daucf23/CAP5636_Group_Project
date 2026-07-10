@@ -2,12 +2,11 @@
 
 ## Team
 
-| Member | Lane (proposed) | Primary paths |
-| --- | --- | --- |
-| Sahil Bhikha | **A — Data** | `nanowiki/data/` |
-| Thomas Belyakov | **B — Train / infra** | `third_party/nanochat/`, `nanowiki/configs/`, train `scripts/` |
-| David Almeida II | **C — Eval / docs** | `nanowiki/eval/`, `nanowiki/prompts/`, `results/`, README |
+- Sahil Bhikha
+- Thomas Belyakov
+- David Almeida II
 
+**Work lanes (unassigned):** A — Data, B — Train / infra, C — Eval / docs.  
 Full split, week plan, and handoff contracts: [team-work-split.md](./team-work-split.md).
 
 ## Branching
@@ -18,7 +17,7 @@ Full split, week plan, and handoff contracts: [team-work-split.md](./team-work-s
 
 ## Pull requests
 
-- Prefer small PRs with a clear purpose and a named lane owner
+- Prefer small PRs with a clear purpose and a named lane (A/B/C) when known
 - Planning docs can land via draft PRs for early feedback
 - Implementation PRs should reference the relevant milestone or run id (A / B / C-short)
 
