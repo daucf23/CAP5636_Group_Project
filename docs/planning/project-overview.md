@@ -53,8 +53,9 @@ Small language models are computationally accessible but often struggle with hal
 ## Compute posture (draft)
 
 - Prefer **subset of Wikipedia**, not necessarily full 11.6 GB
-- Start with NanoChat **Tier 0 smoke test**, then **Tier 1 depth 8–12** if hardware allows
-- Details and cost sketch: [compute-budget.md](./compute-budget.md)
+- Hardware: **UCF Newton first** (H100 preferred), student **RTX 5090 / 3080 Ti** backup, cloud only as contingency (~$50 soft cap)
+- Plan: Tier 0 smoke → two matched Tier 1 runs (~0.5–1B tokens each: Wikipedia + baseline)
+- Details and forecast: [compute-budget.md](./compute-budget.md)
 
 ## Success criteria (draft)
 

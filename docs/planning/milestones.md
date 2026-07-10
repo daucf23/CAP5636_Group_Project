@@ -8,7 +8,9 @@ High-level phases for **NanoWiki**. Dates and owners TBD once syllabus deadlines
 - [x] Add planning document scaffold
 - [x] Capture problem statement, approach, data, and eval plan
 - [x] Lock v1 eval to simple metrics; draft compute tiers
-- [ ] Confirm available GPUs / dollar cap (picks Tier 1 depth + tokens)
+- [x] Inventory hardware (Newton + 5090 + 3080 Ti) and draft resource forecast
+- [ ] Confirm Newton access / queue plan and cloud contingency cap
+- [ ] Pick first main run shape (d12@1B vs d8@0.5B)
 - [ ] Confirm course deliverables and deadlines
 - [ ] Lock baseline definition and v1 non-goals
 - [ ] Assign roles / ownership

@@ -10,7 +10,8 @@ Track decisions the team still needs to make. Move answered items into [project-
 | 4 | Language / libraries? | Python; NanoChat (GPT-style decoder-only); Hugging Face `wikimedia/wikipedia` |
 | 6 | Evaluation (v1)? | **Simple:** held-out Wikipedia val loss / perplexity (bpb) + fixed qualitative encyclopedic prompts. No dedicated hallucination bench in v1. |
 | 7 | Who is on the team? | Sahil Bhikha, Thomas Belyakov, David Almeida II |
-| — | Compute posture? | Stay realistic; subset Wikipedia; prefer Tier 0 smoke test → Tier 1 depth 8–12. See [compute-budget.md](./compute-budget.md). |
+| — | Compute posture? | Newton first; student 5090 / 3080 Ti backup; cloud contingency ~$50. See [compute-budget.md](./compute-budget.md). |
+| — | Hardware inventory? | UCF Newton (V100 + H100); student RTX 5090 + 3080 Ti; optional cloud rental |
 
 ## Priority 1 — Scope still open
 
@@ -22,26 +23,30 @@ Track decisions the team still needs to make. Move answered items into [project-
 
 ## Priority 2 — Technical decisions
 
-3. **What GPUs / cloud credits / campus machines do we have, and what is the soft dollar cap?**  
-   This picks Tier 1 depth + token budget. See [compute-budget.md](./compute-budget.md).
+3. **Newton access status?**  
+   Account ready? Faculty sponsor? Can we request 1× H100 easily, or do we need `highgpu`?
 
-4. **What is the exact baseline (matched token budget)?**  
+4. **Confirm soft cloud contingency cap** (proposed **$50**).
+
+5. **First main run shape:**  
+   - **A)** depth 12 @ ~1B tokens (preferred if H100 or 5090)  
+   - **B)** depth 8 @ ~0.5B tokens (safer / faster)
+
+6. **What is the exact baseline (matched token budget)?**  
    - General-text NanoChat run (which corpus?)  
    - Short-train / untuned control only  
    - Both (only if compute allows)
 
-5. **Do we train from scratch on Wikipedia only, or continue from an existing NanoChat checkpoint?**
+7. **Do we train from scratch on Wikipedia only, or continue from an existing NanoChat checkpoint?**
 
-6. **Tokenizer:** reuse NanoChat’s tokenizer as-is, or train/adapt on Wikipedia?
+8. **Tokenizer:** reuse NanoChat’s tokenizer as-is, or train/adapt on Wikipedia?
 
-7. **First runnable experiment:** depth 8 or 12? Token cap (e.g. 100M / 500M / ~1B)?
-
-8. **Validation split strategy:** by article ID / random articles? Target val size?
+9. **Validation split strategy:** by article ID / random articles? Target val size?
 
 ## Priority 3 — Collaboration
 
-9. **Roles / ownership** (data, training, eval, report)?
+10. **Roles / ownership** (data, training, eval, report)?
 
-10. **Hard deadlines from the syllabus?**
+11. **Hard deadlines from the syllabus?**
 
-11. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
+12. **Day-to-day discussion channel?** (GitHub Issues, Discord, Slack, etc.)
