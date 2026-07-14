@@ -7,56 +7,56 @@
 
 | Lane | Owns | Does *not* own |
 | --- | --- | --- |
-| **A — Data** | `nanowiki/data/`, download/clean/article-ID split/export, train/val manifests, smoke shard | Training hyperparameters, prompt sheet |
-| **B — Train / infra** | `third_party/nanochat/`, `nanowiki/configs/`, `scripts/` train launchers, Newton/5090 run recipes, Run A/B/C-short jobs | Wikipedia cleaning logic, final write-up prose |
-| **C — Eval / docs** | `nanowiki/eval/`, `nanowiki/prompts/`, `results/` tables & samples, root `README` repro steps, report/figures draft | Data shard format internals, Slurm scripts (unless helping B) |
+| **A — Data** | Wiki/general download, article-ID Wiki split, both validation sets, Parquet export, manifests/checksums, smoke fixtures | Training hyperparameters, prompt scoring |
+| **B — Train / infra** | Pinned NanoChat, dataset-root adapter, tokenizer artifact, configs/launchers, paired smoke, W-Wiki/G-General jobs and checkpoints | Wikipedia cleaning policy, final prose ownership |
+| **C — Eval / paper** | Cross-domain bpb, anonymized prompts/scoring, results/figures, root README, paper integration, slides | Data shard internals, training launcher internals |
 
-**Shared (all three):** design review, interpreting B vs C-short results, final PDF/report polish, presentation if required.
+**Shared (all three):** design review, interpreting W-Wiki vs G-General results, final PDF/report polish, and presentation.
 
 ## Why this is even
 
 | Week | Lane A (Data) | Lane B (Train) | Lane C (Eval/Docs) |
 | --- | --- | --- | --- |
-| **1** | Download + clean + article-ID split; tiny smoke export | Pin NanoChat; smoke config; prove train on smoke shard | Draft prompt sheet; stub metrics/results layout; README skeleton |
-| **2** | Freeze 0.5B subset + val ID list; document C-short tiny corpus choice | Run A done; launch Run B (d8@0.5B); launch C-short | Wire eval on checkpoints; collect bpb + samples into `results/` |
-| **3** | Help re-export / checksums if runs need reruns; data appendix for report | Optional B-FT / B2 only if ahead; package checkpoints | Comparison table, qualitative notes, write-up, repro README |
+| **Jul 13–15** | Freeze both tiny roots and Wiki article-ID split | Pin/adapt NanoChat; paired smoke; benchmark 5090 | Freeze prompt/rating sheet; paper/README skeleton |
+| **Jul 16–20** | Freeze full manifests and checksums; support reruns | Launch matched W-Wiki/G-General and save checkpoints | Wire cross-domain eval; draft Methods/Related Work |
+| **Jul 21–25** | Data appendix and reproduction verification | Package configs/run cards; help reproduce smoke | Freeze results; integrate paper, README, and slides |
 
 Each lane has a **week-1 deliverable**, a **week-2 critical path item**, and a **week-3 packaging item**.
 
 ## Handoff contracts (keep interfaces clear)
 
 1. **Data → Train:** Lane A publishes frozen paths:
-   - `data/processed/train/` shards
-   - `data/processed/val/` shards
-   - `data/processed/val_article_ids.json` (or equivalent)
-   - short note: token estimate, license, how to rebuild
+   - separate Wiki/general dataset roots with train shards and final validation shard
+   - `data/processed/wiki_val_article_ids.json` (or equivalent)
+   - source manifests, token estimates, checksums, licenses, and rebuild instructions
 2. **Train → Eval:** Lane B publishes under `results/<run_id>/`:
    - checkpoint path
-   - run card (depth, tokens, init, hardware, wall time)
+   - run card (depth, tokens, init, tokenizer, dataset manifest, hardware, throughput, wall time)
 3. **Eval → Report:** Lane C publishes:
-   - `results/summary.md` (B vs C-short bpb table)
+   - `results/summary.md` (W-Wiki/G-General cross-domain bpb and checkpoint curves)
    - `results/<run_id>/samples.md`
    - README “How to reproduce”
 
 ## Integration checkpoints (all three present)
 
-- End of week 1: smoke train reads Lane A’s shard and logs one val metric; Lane C’s prompt file exists.
-- End of week 2: Run B and C-short finished (or clearly in queue); Lane C has first comparison draft.
-- End of week 3: summary table + samples + README repro frozen for submission package.
+- **Jul 15:** both smoke roots train/evaluate/reload; throughput fixes the matched budget; prompt sheet exists.
+- **Jul 20:** W-Wiki and G-General are finished or the decision gate has been invoked.
+- **Jul 21:** experiments freeze; Lane C has the first complete results narrative.
+- **Jul 25:** paper, repository, and slides are submission-ready.
 
 ## Load-balancing knobs
 
 If one lane finishes early:
 
-- Lane A can help B with Newton job scripts or C-short data.
+- Lane A can help B with run manifests or general-text data.
 - Lane B can help C automate sample generation.
 - Lane C can help A with license/README data docs.
 
 If one lane slips:
 
-- Cut stretch (B2 / C-full) first — never cut another lane’s critical path without agreeing.
+- Cut optional factuality evaluation first; reduce both token budgets equally if compute slips. Never weaken only the baseline.
 
 ## Open
 
 - Assign people to lanes A / B / C when the team decides.
-- Exact final-report format still TBD from the course.
+- Assign names immediately; unassigned lanes are a schedule blocker.

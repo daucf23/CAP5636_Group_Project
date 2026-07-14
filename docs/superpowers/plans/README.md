@@ -1,5 +1,3 @@
 # Implementation plans
 
-Step-by-step implementation plans will be saved here as:
-
-`YYYY-MM-DD-<feature-name>.md`
+- [2026-07-13-nanowiki-execution.md](./2026-07-13-nanowiki-execution.md) — deadline-driven matched-comparison execution plan

@@ -1,9 +1,9 @@
 # Project Overview
 
 **Course:** CAP 5636  
-**Title:** NanoWiki: Pretraining a Small Decoder-Only Transformer from Scratch on Curated Wikipedia Data  
+**Working final title:** NanoWiki: A Controlled Study of Wikipedia-Only vs General-Text Pretraining for a Small Transformer
 **Repository:** [daucf23/CAP5636_Group_Project](https://github.com/daucf23/CAP5636_Group_Project)  
-**Status:** Abstract submitted; **design spec drafted** for review → then implementation plan
+**Status:** Abstract submitted; design revised for course-rubric alignment; implementation is now on the critical path
 
 ## Team
 
@@ -16,24 +16,26 @@
 | Lane | Focus |
 | --- | --- |
 | **A — Data** | Wikipedia prep, article-ID split, shards |
-| **B — Train / infra** | NanoChat pin, configs, Run A/B/C-short |
-| **C — Eval / docs** | bpb + prompts, results, README/report |
+| **B — Train / infra** | NanoChat pin, configs, W-Wiki/G-General runs |
+| **C — Eval / docs** | cross-domain bpb, prompts, results, README/report |
 
 Details: [team-work-split.md](./team-work-split.md).
 
 ## Problem and motivation
 
-Small language models are computationally accessible but often struggle with hallucinations and factual inconsistency. Typical pretraining corpora are massive and stylistically diverse. Wikipedia provides a large, structured, neutral corpus that is a strong candidate for testing whether restricting pretraining to encyclopedic text can reduce hallucination and improve factual consistency in a small model.
+Small language models are computationally accessible, but their behavior depends strongly on pretraining-data composition. Wikipedia provides a large, structured, relatively neutral corpus for studying the benefits and costs of domain-restricted pretraining.
 
-**Research question:** Does pretraining a small decoder-only transformer primarily (or only) on Wikipedia improve factual consistency and encyclopedic generation quality relative to a general-text / untuned NanoChat baseline?
+**Research question:** At fixed model size and training-token budget, how does Wikipedia-only pretraining affect in-domain fit, out-of-domain fit, and encyclopedic generation style relative to general-text pretraining?
+
+The submitted proposal motivates factual consistency, but v1 does not treat perplexity or style as proof of reduced hallucination.
 
 ## Approach
 
 1. Use **NanoChat** ([karpathy/nanochat](https://github.com/karpathy/nanochat)) as a **pinned submodule / clone**; this repo is a **thin wrapper** (data prep, run configs, eval, prompts) rather than a full fork.
-2. Prefer **from-scratch** pretraining on curated Wikipedia; keep **continue-pretrain / light fine-tune from a small NanoChat checkpoint** as a realistic fallback if scratch quality is too weak in ~3 weeks.
-3. **Reuse NanoChat’s tokenizer as-is** for v1 (simplest; keeps the continue-pretrain fallback viable).
-4. Compare against **C-short**: same architecture/init recipe, brief train (~5–25M tokens). Defer a full matched general-text pretrain if time remains.
-5. Optionally scale to depth 12 and/or ablate data size / training duration after the d8 run works.
+2. Train **W-Wiki** and **G-General** with the same depth, tokenizer, initialization recipe, optimizer settings, and consumed-token budget.
+3. Prefer from-scratch pretraining; if continued pretraining becomes necessary, start both runs from the exact same checkpoint.
+4. Use one pinned NanoChat tokenizer artifact for both domains and record its provenance/checksum.
+5. Save intermediate checkpoints to obtain learning curves without extra training. Depth 12 and additional model families are out of scope.
 
 ## Data
 
@@ -49,35 +51,39 @@ Small language models are computationally accessible but often struggle with hal
 
 **Quantitative**
 
-- Validation **bits-per-byte (bpb)** on **article-ID** held-out Wikipedia articles (primary); loss/perplexity optional secondary
-- Compare Wikipedia-trained depth-8 model (**Run B**) vs **C-short** control (same arch/tokenizer/init/eval set; **not** equal token budget)
+- Validation **bits-per-byte (bpb)** on frozen Wikipedia and general-text holdouts
+- Compare W-Wiki and G-General at equal training tokens, including intermediate checkpoints
+- Report the cross-domain trade-off rather than selecting only the metric favorable to W-Wiki
 
 **Qualitative**
 
-- Fixed encyclopedic prompt sheet → compare coherence, repetition, neutral tone, Wikipedia-like structure
-- Desired outcome: lower Wikipedia val loss/bpb and more encyclopedic completions without excessive repetition or degeneration
+- Fixed encyclopedic prompt sheet with identical decoding
+- Model-anonymized scoring by at least two team members for coherence, repetition, neutral tone, and Wikipedia-like structure
+- Include representative successes, failures, and disagreements
 
-**Deferred (not v1):** dedicated hallucination / closed-book QA / external judge metrics. Motivation still mentions factuality; state that limitation explicitly in the write-up.
+**Deferred (not v1):** full hallucination, closed-book QA, or external-judge evaluation. Claims are limited to domain fit and observed generation behavior.
 
 **Design spec:** [2026-07-10-nanowiki-design.md](../superpowers/specs/2026-07-10-nanowiki-design.md)
 
 ## Compute posture (draft)
 
 - Prefer **subset of Wikipedia**, not necessarily full 11.6 GB
-- Hardware: **UCF Newton first** (H100 preferred), student **RTX 5090 / 3080 Ti** backup, cloud only as contingency (~$50 soft cap)
-- Plan (~3 weeks, guidance): Tier 0 smoke → **depth 8 @ ~0.5B** Wikipedia → **C-short** → write-up; optional C-full or depth 12 only if ahead
+- Guaranteed hardware: student **RTX 5090**; Newton/cloud are optional accelerators, not dependencies
+- Plan (July 13–25): paired smoke → freeze equal budget → W-Wiki + G-General → cross-domain evaluation → paper/slides
+- Target **0.5B tokens per run**; reduce both equally to no less than ~0.25B if measured throughput or stability requires it
 - Compute/time model: [compute-budget.md](./compute-budget.md)
 
 ## Success criteria (draft)
 
 - Reproducible training + eval pipeline from this repo
-- Clear baseline vs Wikipedia-adapted comparison (**bpb** + qualitative samples)
-- Documented limitations (especially: perplexity ≠ hallucination; compute/data caps)
+- Controlled Wikipedia-vs-general comparison at matched tokens
+- Cross-domain bpb learning curves plus blinded qualitative samples
+- Documented limitations (especially: perplexity ≠ factuality; corpus contamination, compute, and data caps)
 
 ## Non-goals (draft — confirm)
 
 - Not building a production chatbot or retrieval-augmented system
-- Not claiming SOTA factuality without dedicated hallucination / fact-checking benchmarks in v1
+- Not claiming that Wikipedia pretraining reduces hallucination without a dedicated benchmark
 - Not running full NanoChat d26 8×H100 speedrun unless compute appears later
 - Keep the model small and runnable for the team
 
@@ -86,7 +92,7 @@ Small language models are computationally accessible but often struggle with hal
 1. **Project abstract** — **submitted** (original brief); archive copy in [project-abstract-draft.md](./project-abstract-draft.md)
 2. Data preprocessing + train/eval scripts based on NanoChat
 3. Experiment results (tables + sample generations)
-4. Final report and presentation materials per later course requirements (TBD)
+4. 6–8 page NeurIPS-style final paper, reproducible repository, and 10–12 presentation slides
 
 ## References
 

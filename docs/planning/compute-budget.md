@@ -11,13 +11,13 @@ Goal: stay **simple and realistic**. Prefer a small NanoChat depth, a Wikipedia 
 | Eval complexity | **Simple:** held-out Wikipedia val loss / perplexity (or bits-per-byte) + fixed qualitative prompts |
 | Factuality / hallucination benches | **Deferred** (not in v1) |
 | Primary dial | NanoChat `--depth` (auto-scales width, tokens, LR, etc.) |
-| Hardware posture | **Newton first**, student **5090 / 3080 Ti** as backup, **cloud only if blocked** |
-| First main depth | **Start at depth 8 (~0.5B tokens)**; attempt **depth 12 (~1B)** only after B+C succeed |
-| v1 baseline | **C-short** (~5–25M tokens; not a full second general-text pretrain) |
+| Hardware posture | **RTX 5090 is the guaranteed path**; Newton/cloud may accelerate reruns but are not dependencies |
+| Primary depth | **Depth 8** for both matched runs; depth 12 is out of scope before submission |
+| v1 baseline | **Matched G-General run** at the same depth, initialization recipe, and consumed-token budget |
 | Init strategy | **Prefer from-scratch** on Wikipedia; **continue-pretrain / light FT from a small NanoChat ckpt** is the realistic fallback |
 | Tokenizer (v1) | **Reuse NanoChat tokenizer as-is**; revisit only if Wikipedia tok_eval looks pathological |
 | Val split | **By article ID** (unseen articles); size ~1–5% of used subset or fixed N (freeze in data prep) |
-| Working window | **~3 weeks** guidance to v1 results + draft write-up |
+| Working window | **July 13–25** to soft deadline; July 27 hard deadline |
 
 ## Available hardware (team)
 
@@ -70,104 +70,86 @@ These are **planning estimates**, not measured NanoChat numbers on our boxes. Re
 
 Wall time ≈ `tokens / tok_per_s` (plus eval/checkpoint overhead ~10–20%).
 
-## Forecast: recommended experiment matrix
+## Forecast: required experiment matrix
 
-### Run A — Tier 0 smoke (required)
+### Run A — paired Tier 0 smoke
 
 | Item | Value |
 | --- | --- |
 | Depth | 4–6 |
-| Tokens | ~1–10M (or fixed tiny `--num-iterations`) |
-| Data | Tiny Wikipedia shard |
-| Where | 3080 Ti **or** 5090 **or** Newton interactive/debug |
-| Wall time | **minutes–1 hour** |
-| Cloud $ | **$0** |
+| Tokens | ~1–10M per domain |
+| Data | Tiny Wikipedia and general-text shards, each with validation |
+| Hardware | RTX 5090 (3080 Ti may be used for CPU/data-path checks) |
+| Exit criteria | Both roots train, evaluate bpb, save, reload, and generate |
+| Wall time | Minutes–1 hour after the environment works |
 
-### Run B — Main Wikipedia model (Tier 1, start here)
+The smoke run must report measured `train/tok_per_sec`, peak VRAM, attention backend, device batch size, and compile time. Forecasts remain provisional until this measurement exists.
 
-| Item | Value |
+### Runs W-Wiki and G-General — matched primary experiment
+
+| Item | W-Wiki | G-General |
+| --- | --- | --- |
+| Depth | 8 | 8 |
+| Tokens | Target 0.5B; floor ~0.25B | Exactly equal to W-Wiki |
+| Data | Wikipedia train subset | Pinned NanoChat general-text subset |
+| Validation | Wiki + general holdouts | Same Wiki + general holdouts |
+| Initialization | Scratch preferred | Same seed/recipe as W-Wiki |
+| Checkpoints | ~10%, 30%, 60%, 100% | Same token positions |
+
+The token budget is frozen after the smoke benchmark. Use explicit iterations rather than relying on an evolving upstream default. If the 5090 requires a reduction, reduce both runs equally.
+
+### Conservative 5090 time bounds
+
+For 0.5B tokens, training-only time is approximately:
+
+- 80k tokens/s: ~1.7 hours per run
+- 20k tokens/s: ~6.9 hours per run
+- 10k tokens/s: ~13.9 hours per run
+
+Plan **8–15 hours per full run until measured otherwise**, including evaluation/checkpoint overhead and leaving room for one failed attempt. Current NanoChat may fall back to SDPA on RTX 5090; if sliding-window attention is inefficient, test full-context `--window-pattern=L` during smoke and use the same choice for both runs.
+
+### No-extra-training ablations
+
+- Evaluate matched checkpoints to produce bpb-vs-token learning curves.
+- Evaluate the initialization checkpoint if technically convenient.
+- Compare both models on both domains.
+
+These are required because they strengthen empirical rigor without adding full training runs. Depth 12, alternative tokenizers, and extra architectures are cut.
+
+## Resource plan
+
+1. Treat the RTX 5090 as the only guaranteed training device.
+2. Complete the paired smoke before spending time on Newton.
+3. Use Newton only if access is already working and moving the exact pinned environment is low risk.
+4. Keep cloud as an optional rerun contingency with a team-approved cap; do not delay local execution waiting for it.
+5. Reserve the 3080 Ti for development and tiny smoke fixtures.
+
+## Project-level forecast
+
+| Scenario | Required runs | Estimated 5090 GPU-hours | Scientific value |
+| --- | --- | --- | --- |
+| **Preferred** | paired smoke + W/G at 0.5B | ~5–30 plus one retry buffer | Strongest planned comparison |
+| **Deadline-safe** | paired smoke + W/G at 0.25–0.3B | ~3–18 plus retry buffer | Controlled and still reportable |
+| **Invalid primary design** | W-Wiki 0.5B + undertrained control | Lower | Confounds corpus with training amount |
+
+**Bottom line:** two matched smaller runs are preferable to one larger Wikipedia run against an intentionally weak baseline. GPU time remains manageable; engineering and writing time are the binding constraints.
+
+## Deadline sketch
+
+| Date | Exit criterion |
 | --- | --- |
-| Depth | **8** first |
-| Tokens | **~0.5B** (explicit cap; subset Wikipedia) |
-| Data | Wikipedia subset sized to token budget; held-out articles for val |
-| Init (preferred) | **From scratch** — cleanest “Wikipedia pretraining” story |
-| Init (fallback) | **Continue-pretrain / light FT** from a small NanoChat checkpoint if scratch generations are too degenerate for a 3-week report |
-| Where | **Newton 1× H100** preferred; else **5090**; 3080 Ti only if heavily capped |
-| Wall time (~0.5B) | H100: **~0.5–2 hours**; 5090: **~1–2 hours**; V100: **~3–8 hours** |
-| Cloud $ if rented | **~$2–10** for a single A100/H100-class run |
+| **Jul 14** | Owners assigned; NanoChat commit, tokenizer, research question, and dataset interface frozen |
+| **Jul 15** | Paired end-to-end smoke green with measured 5090 throughput |
+| **Jul 16–17** | Wiki/general manifests and both validation sets frozen; final equal budget recorded |
+| **Jul 18–20** | W-Wiki and G-General completed, including matched checkpoints |
+| **Jul 21** | Experiment freeze; cross-domain metrics and blinded samples complete |
+| **Jul 22–24** | Paper, figures, README, and slides |
+| **Jul 25** | Soft submission target |
+| **Jul 26–27** | Correction-only hard-deadline buffer |
 
-**Guidance on A vs fallback:** Try scratch first at d8. If val bpb drops but samples stay unusable, switch the *same* token budget to continue-pretrain and document the base checkpoint. C-short should use the **same init recipe** (scratch twin vs same base ckpt + short train) so the comparison stays fair.
+## Decision gates
 
-### Run B2 — Scale-up (only after B + C succeed)
-
-| Item | Value |
-| --- | --- |
-| Depth | **12** |
-| Tokens | **~0.5–1.0B** (prefer 1B if time/queue allow) |
-| Where | Same as Run B |
-| Wall time (1B) | H100: **~1–3 hours**; 5090: **~2–4 hours** |
-
-### Run C — C-short control (v1 default)
-
-For the **3-week / cheaper** path, do **not** train a full second general-text model. Default control is **C-short**: same architecture, tokenizer, and Wikipedia eval set as Run B; train only briefly.
-
-| Item | Value |
-| --- | --- |
-| Budget | **~5–25M tokens** (~1–5% of Run B’s ~0.5B), exact number frozen when we set Run B steps |
-| Data for the short train | Prefer a **small generic shard** (NanoChat default / FineWeb-style) if easy; else a tiny Wikipedia shard — document which |
-| Extra cost | **≪ 1× Run B** (typically minutes to ~30 min on H100/5090) |
-| Trade-off | Weaker causal claim than a matched 0.5B general-text pretrain; still contrasts a Wikipedia-trained model with an undertrained twin |
-| Deferred | **C-full** (same 0.5B tokens, non-Wiki data); **C0** init-only only as an emergency fallback |
-
-### Run C-full — Deferred matched general-text baseline
-
-Same depth/tokens/tokenizer/eval as Run B, but trained on NanoChat default / FineWeb-style general text. Schedule only if d8 Wikipedia run finishes early.
-
-### Run D — Optional ablation (only if A–C succeed)
-
-| Ablation | Extra compute |
-| --- | --- |
-| Token budgets 100M / 300M / 0.5B at depth 8 | Can often come from checkpoints of Run B |
-| Depth 12 scale-up | Covered by Run B2 + C12 |
-
-## Resource plan (priority order)
-
-1. **Get Newton access early** (ARCC registration, advisor/faculty sponsorship if required, Slurm tutorial, storage quota).
-2. **Tier 0 on 3080 Ti or 5090** while Newton account/queue is sorted — prove the pipeline.
-3. **Submit Run B on Newton H100** (1 GPU). Run **C-short** on the same job or a short follow-up. Prefer dual-H100 nodes over waiting for `highgpu` 8-GPU nodes.
-4. **Use 5090** if Newton queue wait > ~1–2 days or software modules block us.
-5. **Rent cloud** only if both Newton and student GPUs cannot finish B+C before a course checkpoint — budget a **soft cap of ~$50** for contingency (enough for several single-GPU runs, not an 8×H100 speedrun).
-
-## Project-level forecast (v1 success path)
-
-| Scenario | Hardware | Runs | Est. GPU-hours | Est. $ |
-| --- | --- | --- | --- | --- |
-| **v1 minimum (3-week guidance)** | Newton H100 or 5090 | A + B(d8@0.5B) + C-short | **~2–6 GPU-h** | **$0** (or ~$5–15 cloud) |
-| **v1 + full general baseline** | same | above + C-full @ 0.5B | **~4–10 GPU-h** | **$0** (or ~$10–25 cloud) |
-| **v1 + d12 scale-up** | same | above + B2 + control | **~8–20 GPU-h** | **$0** (or ~$15–40 cloud) |
-| **3080 Ti only** | 3080 Ti | A + smaller d8 (e.g. 100–200M tokens) | longer wall time | **$0** |
-| **Avoid for v1** | 8×H100 NanoChat speedrun | full d26 | ~20–25 GPU-h on 8 GPUs | **~$50–70** on-demand |
-
-**Bottom line:** For **~3 weeks**, plan on **one** serious train (**d8 @ ~0.5B Wikipedia**) plus **C-short**. Defer C-full and d12 until that lands. Cloud remains a **~$50 soft contingency**.
-
-
-## Comparison rule (v1 vs stretch)
-
-**v1 (cheap control):** match architecture, tokenizer, and held-out Wikipedia eval set. Do **not** require equal training tokens.
-
-**Stretch (C-full / d12):** also match training tokens (or FLOPs) and document the data source.
-## 3-week sketch (guidance)
-
-| Week | Focus |
-| --- | --- |
-| **1** | Newton/local setup; data download + preprocess; Tier 0 smoke; freeze prompt sheet |
-| **2** | Run B (d8 @ ~0.5B); Run C-short; val loss + samples |
-| **3** | Tables/plots; write-up; optional C-full or d12 only if ahead of schedule |
-
-## Still useful to confirm
-
-- Newton account status / faculty sponsor / queue access (`highgpu` needed or not)
-- Soft cloud cap (proposed **$50**)
-- Exact course due date relative to this 3-week window
-- Whether C-short’s brief train uses a tiny generic shard or a tiny Wikipedia shard
-- Decision rule for switching to continue-pretrain (e.g. after first d8 scratch run: samples unusable / val plateau)
+- **No paired smoke by Jul 15:** reduce integration surface and token budget; do not add evaluations.
+- **Measured full-run estimate above 15 hours each:** freeze both runs at 0.25–0.3B tokens.
+- **No matched data roots by Jul 17:** explicitly pivot the paper to a Wikipedia learning-curve pilot; do not claim a corpus comparison.
+- **No comparable pair by Jul 20:** stop training and write an honest pilot/negative-results report.

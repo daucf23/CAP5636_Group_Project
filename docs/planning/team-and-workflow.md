@@ -19,7 +19,7 @@ Full split, week plan, and handoff contracts: [team-work-split.md](./team-work-s
 
 - Prefer small PRs with a clear purpose and a named lane (A/B/C) when known
 - Planning docs can land via draft PRs for early feedback
-- Implementation PRs should reference the relevant milestone or run id (A / B / C-short)
+- Implementation PRs should reference the relevant milestone or run ID (A-smoke / W-Wiki / G-General)
 
 ## Documentation layout
 

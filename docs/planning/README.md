@@ -10,7 +10,7 @@ These files are **guidance**: problem framing, how we intend to run experiments,
 | --- | --- |
 | [project-overview.md](./project-overview.md) | Goals, scope, constraints, and success criteria |
 | [project-abstract-draft.md](./project-abstract-draft.md) | 400–600 word abstract draft for Webcourses PDF |
-| [course-requirements.md](./course-requirements.md) | Abstract milestone format, rubric, failure modes |
+| [course-requirements.md](./course-requirements.md) | Final paper, repository, presentation, rubrics, and AI disclosure |
 | [compute-budget.md](./compute-budget.md) | Realistic depth / token / hardware tiers |
 | [team-work-split.md](./team-work-split.md) | Even 3-person lane ownership and handoffs |
 | [milestones.md](./milestones.md) | Phased roadmap from planning through delivery |
@@ -19,10 +19,12 @@ These files are **guidance**: problem framing, how we intend to run experiments,
 
 ## Specs and plans
 
-Once requirements are clear, detailed design specs and implementation plans live under:
+Detailed design specs and implementation plans live under:
 
 - `docs/superpowers/specs/` — design specifications
 - `docs/superpowers/plans/` — step-by-step implementation plans
+
+Current implementation plan: [2026-07-13-nanowiki-execution.md](../superpowers/plans/2026-07-13-nanowiki-execution.md).
 
 ## Branch
 

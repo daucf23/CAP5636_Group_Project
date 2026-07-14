@@ -10,12 +10,14 @@
 
 Build a **reproducible thin wrapper** around NanoChat that:
 
-1. Prepares a curated English Wikipedia subset with an **article-ID** validation holdout.
-2. Trains a **depth-8** decoder-only model for about **0.5B tokens** (prefer from scratch).
-3. Compares it to a **C-short** control (~5–25M tokens, same architecture/tokenizer/init recipe).
-4. Reports held-out Wikipedia validation **bits-per-byte (bpb)** plus **fixed-prompt qualitative samples**.
+1. Prepares an English Wikipedia corpus with an **article-ID** validation holdout and a matched general-text corpus.
+2. Trains two **depth-8** decoder-only models for the **same token budget** (target **0.5B each**, reducible equally after a measured smoke run).
+3. Compares **W-Wiki** (Wikipedia-only) against **G-General** (general text) with architecture, tokenizer, initialization, optimization, and compute held constant.
+4. Reports both models on held-out **Wikipedia and general-text bits-per-byte (bpb)**, checkpoint learning curves, and blinded fixed-prompt qualitative samples.
 
-This is guidance for execution and compute/time modeling, not a claim that perplexity equals factuality.
+**Research question:** At fixed model size and training-token budget, how does Wikipedia-only pretraining change in-domain fit, out-of-domain fit, and encyclopedic generation style relative to general-text pretraining?
+
+This is a controlled domain-specialization study. It does **not** claim that perplexity or Wikipedia-like prose equals factuality.
 
 ## 2. Non-goals (v1)
 
@@ -23,7 +25,8 @@ This is guidance for execution and compute/time modeling, not a claim that perpl
 - No dedicated hallucination / closed-book QA / external-judge benchmark in v1.
 - No full NanoChat d26 8×H100 speedrun.
 - No requirement to train on the entire 11.6 GB dump.
-- No full matched-token general-text pretrain in v1 (deferred as optional stretch).
+- No claim that the experiment demonstrates reduced hallucination without a dedicated factuality benchmark.
+- No intentionally undertrained model as the primary baseline.
 
 ## 3. Architecture / repository layout
 
@@ -34,8 +37,8 @@ CAP5636_Group_Project/
   third_party/nanochat/     # git submodule or pinned clone of karpathy/nanochat
   nanowiki/
     data/                   # download, clean, article-ID split, export shards
-    configs/                # smoke, d8 Wikipedia (Run B), C-short
-    eval/                   # val metrics + generation helpers
+    configs/                # smoke, W-Wiki, G-General
+    eval/                   # cross-domain metrics + generation helpers
     prompts/                # fixed encyclopedic prompt sheet
   scripts/                  # thin CLIs: prepare data, launch train, run eval
   docs/planning/            # planning guidance (existing)
@@ -55,7 +58,7 @@ CAP5636_Group_Project/
 | Val metrics + prompt generations | `nanowiki/eval` + `nanowiki/prompts` |
 | How to reproduce | root `README.md` + `results/` |
 
-Training is launched by calling NanoChat’s training entrypoint with our data paths and config flags (depth, iterations/token budget, batch size, etc.).
+NanoChat must be pinned to an exact commit. Because its current pretraining loader assumes a fixed data directory and treats the last Parquet shard as validation, the wrapper must expose a dataset-root override (small maintained patch or adapter) and export each corpus with an explicit final validation shard.
 
 ## 4. Data pipeline
 
@@ -63,14 +66,14 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 
 **Steps (in order)**
 
-1. **Download** the English split (stream or cache locally / on Newton storage).
+1. **Download/stream** the English split; stop after enough source text is collected for the frozen token budget plus packing/cropping overhead.
 2. **Clean lightly:** drop empty or near-empty articles; keep stable fields: article id, title, text.
 3. **Split by article ID:** assign each article wholly to train or val. Default val size: **~2% of articles** in the working subset (or a fixed N if 2% is awkward); freeze the ID list to disk so runs are comparable.
-4. **Subset train** to about **0.5B tokens** for Run B (do not require the full dump).
-5. **Export** train/val into the file/shard format NanoChat’s dataloader expects.
-6. **Tokenizer:** reuse NanoChat’s tokenizer **as-is**. Only revisit if compression on Wikipedia is clearly pathological.
-7. **C-short data:** prefer a **tiny generic text shard** (NanoChat default / FineWeb-style) if easy to obtain; otherwise a tiny slice of the Wikipedia train pool. **Document which** in the run card.
-8. **Smoke data:** a few MB / ~1–10M tokens for Tier 0.
+4. **Subset train** to the frozen W-Wiki budget (target **0.5B consumed tokens**). Collect enough source tokens to account for NanoChat document-packing crop loss and avoid unintended corpus repetition.
+5. **Prepare G-General:** use a pinned subset of NanoChat’s general pretraining corpus with the **same consumed-token budget** as W-Wiki. Freeze its source and validation manifests.
+6. **Export** each corpus to NanoChat-compatible Parquet shards. The final shard for each dataset root is validation-only.
+7. **Tokenizer:** use one pinned NanoChat tokenizer artifact for both corpora and both evaluations. Record its provenance and checksum.
+8. **Smoke data:** a few MB / ~1–10M tokens from each domain for Tier 0 integration tests.
 
 **Explicit rule:** validation articles never appear in training shards.
 
@@ -79,19 +82,20 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 | Run ID | Depth | Init | Train tokens | Data | Required? |
 | --- | --- | --- | --- | --- | --- |
 | **A** smoke | 4–6 | scratch | ~1–10M | tiny Wiki shard | **Yes** (first) |
-| **B** main | **8** | scratch (preferred) | **~0.5B** | Wiki train subset | **Yes** |
-| **C-short** | **8** | same recipe as B | **~5–25M** | tiny generic or tiny Wiki | **Yes** |
-| **B-FT** fallback | 8 | continue from small NanoChat ckpt | ~0.5B | same Wiki subset as B | Only if B scratch samples unusable |
-| **B2** stretch | 12 | same as B | ~0.5–1B | Wiki subset | Only if ahead of schedule |
-| **C-full** stretch | 8 | same as B | ~0.5B | general text | Only if ahead of schedule |
+| **W-Wiki** | **8** | scratch (preferred) | **0.25–0.5B, frozen** | Wiki train subset | **Yes** |
+| **G-General** | **8** | same as W-Wiki | **exactly matched** | pinned general text | **Yes** |
+| **W/G checkpoints** | 8 | inherited | ~10%, 30%, 60%, 100% | respective corpus | **Yes** (no extra training) |
+| **W/G-FT fallback** | 8 | same small base checkpoint | exactly matched | Wiki vs general | Only if scratch pipeline cannot produce usable models |
+| **Factuality subset** | 8 | inherited | eval only | external fixed prompts | Optional after core results |
 
 **Fair comparison rules**
 
-- **v1 (B vs C-short):** same depth, tokenizer, init recipe, decoding settings, and **same Wikipedia val article set**. Token budgets are **not** equal by design (C-short is intentionally cheap).
-- **If B-FT is used:** C-short must start from the **same base checkpoint** and only train briefly, so the comparison stays “Wikipedia-adapted vs barely-adapted,” not “pretrained vs random.”
-- **Stretch (C-full / B2):** also match token budget (or FLOPs) and document data source.
+- **Primary comparison:** same depth, tokenizer artifact, seed/init recipe, optimizer, sequence length, batch-token schedule, decoding settings, and consumed-token budget. Training corpus is the intended independent variable.
+- **Cross-domain evaluation:** evaluate both models on the same frozen Wikipedia holdout and the same frozen general-text holdout.
+- **If continued pretraining is used:** both runs start from the exact same checkpoint and receive equal additional tokens.
+- If the measured 5090 throughput requires a smaller budget, reduce **both** runs equally; never preserve W-Wiki by weakening G-General.
 
-**Hardware order:** Newton 1× H100 → student RTX 5090 → cloud contingency (~$50 soft cap). RTX 3080 Ti is for smoke/dev only.
+**Guaranteed hardware plan:** student RTX 5090. Newton or cloud may accelerate reruns but is not on the critical path. RTX 3080 Ti is for smoke/dev only.
 
 **Logging:** each run writes a run card under `results/` with: run id, depth, init, token budget, data source, hardware, wall time, val metric(s), checkpoint path.
 
@@ -102,11 +106,11 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 | Item | Spec |
 | --- | --- |
 | Metric | **Primary:** NanoChat validation **bits-per-byte (bpb)** on the holdout (native to NanoChat logging). **Secondary (optional):** convert or also report loss/perplexity if easy — but the comparison table must always include bpb |
-| Eval data | Article-ID holdout only (same list for B and C-short) |
-| Comparison | Side-by-side table: Run B vs Run C-short (and B-FT if used) |
+| Eval data | Frozen Wikipedia article-ID holdout **and** frozen general-text holdout |
+| Comparison | 2×2 cross-domain comparison: W-Wiki and G-General on both holdouts, including saved-checkpoint learning curves |
 | Artifacts | `results/<run_id>/metrics.json` (or CSV) + summary table in README/report |
 
-**Positive quantitative signal:** Run B achieves **lower** held-out Wikipedia **bpb** than C-short.
+**Expected domain-specialization signal:** W-Wiki achieves lower Wikipedia bpb while G-General retains lower general-text bpb. A null or reversed result is still reportable if the comparison is controlled.
 
 ### 6.2 Qualitative (required)
 
@@ -114,29 +118,30 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 | --- | --- |
 | Prompts | Fixed sheet in `nanowiki/prompts/` (encyclopedic starters; same for every model) |
 | Decoding | Identical settings for all compared models (temperature, max tokens, etc. — freeze in config) |
-| Outputs | Save raw generations under `results/<run_id>/samples.md` |
-| Rubric | Manual checklist per sample: coherence, repetition, neutral tone, Wikipedia-like structure (short notes, not a formal human study) |
+| Outputs | Save raw, model-anonymized generations under `results/<run_id>/samples.md` |
+| Rubric | At least two team members independently score coherence, repetition, neutral tone, and Wikipedia-like structure before model identities are revealed; report counts/means and disagreements |
 
-**Positive qualitative signal:** Run B samples are clearly more encyclopedic / less degenerate than C-short on the same prompts.
+**Qualitative analysis:** compare models under identical decoding and report both successes and failure cases. Do not require the expected model to “win.”
 
 ### 6.3 What we will state in the write-up
 
-- Motivation mentions factual consistency / hallucination.
-- v1 metrics are **proxies** (Wiki fit + style), **not** a dedicated factuality benchmark.
-- Compute and data were capped (depth 8, ~0.5B tokens, subset of Wikipedia).
+- The submitted motivation mentions factual consistency / hallucination, but the implemented study tests **domain specialization**, not hallucination reduction.
+- bpb and style scores are **not** factuality measures.
+- Compute and data were capped (depth 8, equal 0.25–0.5B-token budgets).
+- Negative and null results are valid outcomes under the controlled design.
 
 ### 6.4 Deferred (not v1 unless spare time)
 
-- Closed-book QA / fact-check set
+- Full closed-book QA or fact-check benchmark
 - External LLM judge
-- Full matched general-text baseline (C-full)
-- Depth-12 scale-up (B2)
+- Depth-12 scale-up
+- Additional architectures or tokenizers
 
 ## 7. Error handling and operational notes
 
 - **OOM:** lower NanoChat `--device-batch-size` (32 → 16 → 8 → 4 → 1); keep total token budget via grad accumulation when available.
-- **Newton queue delay:** fall back to 5090 for smoke and, if needed, Run B.
-- **Scratch quality failure:** switch to B-FT with documented base checkpoint; re-run C-short from the same base.
+- **5090 throughput below plan:** use full-context attention if the SDPA sliding-window path is inefficient, then reduce both matched token budgets equally if necessary.
+- **Scratch quality failure:** retain scratch results as valid pretraining evidence; switch to matched W/G continued-pretraining runs only if time permits and clearly label the changed research design.
 - **Data download failure:** document mirror/cache location; keep a tiny committed smoke fixture if license allows, or script-only download with checksums.
 
 ## 8. Testing / verification before claiming a run succeeded
@@ -144,7 +149,7 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 1. Smoke (A): train briefly, log a val metric, generate one sample — must complete without crash.
 2. Data: assert no article ID overlap between train and val manifests.
 3. Eval: running the eval entrypoint twice on the same checkpoint yields the same primary metric (determinism within floating tolerance).
-4. Comparison: B and C-short metrics land in the same results table with matching eval set id.
+4. Comparison: W-Wiki and G-General metrics land in one cross-domain results table with matching eval-set IDs and token budgets.
 
 ## 9. Deliverables from this design
 
@@ -162,9 +167,7 @@ Training is launched by calling NanoChat’s training entrypoint with our data p
 
 These can be filled during implementation without changing the design shape:
 
-- Exact Newton account / queue details
-- Exact C-short token count inside 5–25M (freeze when Run B step count is set)
-- Exact val article count (~2% default)
-- Which tiny corpus C-short uses (generic vs Wiki slice)
-- Later course final-report / presentation requirements
-- Confirm people → lanes A/B/C in [team-work-split.md](../../planning/team-work-split.md) when the team is ready (lanes defined; names not assigned yet)
+- Exact matched token budget inside 0.25–0.5B, frozen from the measured 5090 smoke throughput
+- Exact Wikipedia and general validation sizes
+- Pinned NanoChat commit and general-corpus shard manifest
+- Confirm people → lanes A/B/C in [team-work-split.md](../../planning/team-work-split.md)

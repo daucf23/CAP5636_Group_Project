@@ -1,27 +1,29 @@
-# Project Abstract Draft (for Webcourses PDF)
+# Submitted Project Proposal (Archive)
 
-**Status:** **Submitted** — the course abstract was already turned in (the original NanoWiki brief that started planning). This file is retained as an aligned working copy / archive, not a new submission.  
+**Status:** **Submitted** — this file preserves the original submitted proposal. The [design spec](../superpowers/specs/2026-07-10-nanowiki-design.md) selects and strengthens the proposal’s general-text baseline for final execution.
 **Target length:** 400–600 words (body).  
 **Course:** CAP 5636  
 
 ---
 
-**NanoWiki: Pretraining a Small Decoder-Only Transformer from Scratch on Curated Wikipedia Data** — Sahil Bhikha, Thomas Belyakov, David Almeida II
+**NanoWiki: Pretraining a Small Decoder-Only Transformer from Scratch on Curated Wikipedia Data**
 
-**Problem & Motivation.** Small language models are attractive because they can be trained and served with modest compute, but they often hallucinate and contradict known facts. Many pretraining mixtures span heterogeneous web text, which may encourage fluent but loosely grounded generation. Wikipedia offers a large, structured, and relatively neutral encyclopedic corpus. This project asks whether restricting (or strongly emphasizing) pretraining on Wikipedia improves a small decoder-only model’s fit to encyclopedic text and the style of its completions, relative to an undertrained control with the same architecture. We treat lower held-out Wikipedia perplexity and more coherent, Wikipedia-like generations as proximate success criteria, while noting that perplexity alone is not a full factuality benchmark.
+**Team members:** Sahil Bhikha, Thomas Belyakov, David Almeida II
 
-**Approach.** We will use NanoChat, Karpathy’s minimal GPT-style decoder-only transformer for autoregressive language modeling, as our training harness. The primary experiment trains a depth-8 NanoChat model from scratch on a curated English Wikipedia subset for about 0.5B tokens, reusing NanoChat’s tokenizer. If from-scratch quality is too weak within our timeline, we fall back to continued pretraining or light fine-tuning from a small NanoChat checkpoint with the same token budget and document that choice. The v1 baseline is a C-short control: the same architecture, tokenizer, and initialization recipe, trained for only about 5–25M tokens so the comparison stays cheap and schedule-friendly. We defer a full matched-token general-text pretrain and a depth-12 scale-up unless the depth-8 run finishes early. Compute guidance targets UCF’s Newton GPU cluster (prefer a single H100), with student RTX 5090 / 3080 Ti machines as backup and a small cloud contingency if needed.
+**Problem & Motivation.** Small language models are computationally accessible but they often struggle with hallucinations and factual inconsistency. Usually the datasets they are trained on are massive and ranging over a wide variety of writing styles. Wikipedia provides a large, structured, neutral set of information that could be ideal for testing whether a mode could be trained on structured, encyclopedic data to help with factual accuracy and consistency. This project is studying whether restricting pretraining on Wikipedia data can help improve upon a small model's tendency to hallucinate or have factual inconsistencies.
 
-**Data.** We use the public Hugging Face `wikimedia/wikipedia` dataset, English split `20231101.en` (~11.6 GB of text derived from Wikipedia dumps; original content under CC BY-SA 3.0 and GFDL). We will not require the full dump for the first experiment: we subset to approximately the 0.5B-token training budget, clean and shard text for NanoChat’s dataloader, and hold out validation by article ID so evaluation measures generalization to unseen pages rather than random chunks from trained articles.
+**Approach.** We plan to use NanoChat, a minimal implementation of a GPT-style decoder-only transformer for autoregressive language modeling, to train a small model on the Wikipedia dataset. We will compare the Wikipedia adapted model against the baseline trained on general text or simply the untuned NanoGPT model. We may also compare multiple data sizes or durations of training to further analyze our findings and improvements.
 
-**Evaluation Plan.** Quantitatively, we report validation loss and perplexity (or NanoChat bits-per-byte) on the held-out Wikipedia articles and compare the Wikipedia-trained depth-8 model to the C-short control under the same tokenizer and eval set. Qualitatively, we generate completions from a fixed sheet of encyclopedic prompts and compare coherence, repetition, neutral tone, and Wikipedia-like structure. A positive result is lower held-out Wikipedia loss/perplexity and visibly more encyclopedic, less degenerate samples than the control, with limitations (especially perplexity versus hallucination) stated explicitly in the write-up.
+**Data.** We will use the publicly available Hugging Face `wikimedia/wikipedia` dataset (`20231101.en` split), which is derived from Wikipedia dumps. The original textual content is licensed under the Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0) and GNU Free Documentation License (GFDL). The English split from 2023 contains about 11.6 GB of text information. We will need to preprocess the data in order to prepare it for model pretraining. A held-out validation set will be created for unseen articles.
+
+**Evaluation Plan.** We will evaluate the model quantitatively using validation loss and perplexity on a held-out Wikipedia test set. We will compare the Wikipedia-adapted model against a baseline model that has not been trained on the Wikipedia subset, or against models trained for different numbers of steps/tokens. Qualitatively, we will generate completions from fixed encyclopedic prompts and compare outputs for coherence, repetition, neutral tone, and Wikipedia-like structure. The result we are looking for would be lower perplexity on held-out Wikipedia text and visibly more encyclopedic completions without excessive repetition or degeneration.
 
 **References.**
-[1] A. Karpathy, “nanochat,” GitHub repository, https://github.com/karpathy/nanochat  
-[2] Wikimedia Foundation, “wikimedia/wikipedia,” Hugging Face Datasets, https://huggingface.co/datasets/wikimedia/wikipedia  
-[3] A. Vaswani et al., “Attention Is All You Need,” NeurIPS, 2017. https://arxiv.org/abs/1706.03762  
-[4] S. Gunasekar et al., “Textbooks Are All You Need,” 2023. https://arxiv.org/abs/2306.11644  
-[5] J. Li et al., “DataComp-LM: In search of the next generation of training sets for language models,” 2024. https://arxiv.org/abs/2406.11794  
+[1] https://github.com/karpathy/nanochat
+[2] https://huggingface.co/datasets/wikimedia/wikipedia
+[3] https://arxiv.org/pdf/1706.03762 — Attention Is All You Need
+[4] https://arxiv.org/pdf/2306.11644 — Textbooks Are All You Need
+[5] https://arxiv.org/pdf/2406.11794 — DataComp-LM: In search of the next generation of training sets for language models
 
 ---
 

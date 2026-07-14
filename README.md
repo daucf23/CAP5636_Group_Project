@@ -6,13 +6,14 @@
 
 ## Status
 
-Planning is underway on branch `cursor/project-planning-3281`.
+Design is frozen around a matched-token Wikipedia-vs-general-text study; implementation is on the July 25 critical path.
 
 Start here: [docs/planning/README.md](docs/planning/README.md)
 
 ## Quick links
 
 - [Design spec (in review)](docs/superpowers/specs/2026-07-10-nanowiki-design.md)
+- [Deadline-driven execution plan](docs/superpowers/plans/2026-07-13-nanowiki-execution.md)
 - [Team work split](docs/planning/team-work-split.md)
 - [Project overview](docs/planning/project-overview.md)
 - [Project abstract draft](docs/planning/project-abstract-draft.md)
@@ -24,4 +25,4 @@ Start here: [docs/planning/README.md](docs/planning/README.md)
 
 ## One-line summary
 
-Train a NanoChat-style small LM on Hugging Face `wikimedia/wikipedia` (`20231101.en`) and compare Wikipedia perplexity and encyclopedic generation quality against a non-Wikipedia / untuned baseline.
+At a matched model and token budget, compare Wikipedia-only and general-text NanoChat pretraining using cross-domain bpb learning curves and blinded encyclopedic generation analysis.
