@@ -6,7 +6,7 @@
 
 ## One-line summary
 
-**Pretrain** a small decoder-only Transformer on **TinyStories**, then **adapt** it so it can write short children’s **stories that stay faithful to a provided fact card**, and measure the **faithfulness–narrative quality tradeoff** against matched controls.
+**Pretrain** a small decoder-only Transformer on **TinyStories**, then **adapt** it so it can write short **stories that stay faithful to a provided fact card**, and measure the **faithfulness–narrative quality tradeoff** against matched controls.
 
 ## Research question
 
@@ -132,7 +132,7 @@ results/<run_id>/
 - Perplexity alone as proof of factual stories  
 - Reproducing large-LM token counts or multi-GPU training as requirements  
 - RAG, chat UI, agents, or RL alignment as core deliverables  
-- Real educational product readiness or child-safety guarantees  
+- Real educational product readiness or -safety guarantees  
 
 ## Team work split
 
