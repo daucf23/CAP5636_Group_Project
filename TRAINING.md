@@ -119,7 +119,9 @@ Each run again writes `results/<run_id>/{config.yaml, metrics.json, RUN_CARD.md,
 
 ## Fixed decoding
 
-`scripts/lab_gpt/generation.py` exposes `FIXED_EVAL_DECODING` (temperature 0.85, top-p 0.9, `max_new_tokens=300`). Lane C's eval harness should import this rather than redefining decoding settings, so B0/B1/M2 are compared under identical decoding (README requirement).
+`scripts/lab_gpt/generation.py` exposes `FIXED_EVAL_DECODING` (temperature 0.85, top-p 0.9, `max_new_tokens=300`) and `FIXED_EVAL_SEED` (default `0`). Lane C's eval harness imports these rather than redefining decoding, so B0/B1/M2 are compared under identical settings.
+
+`eval/generate_samples.py --seed N` (default `0`) derives a per-`(system, prompt)` sample seed and records both in each JSONL row's `decoding` field. Regenerating without changing `--seed` should reproduce the same stories (same checkpoints + tokenizer).
 
 `max_new_tokens` must clear the gold story length (max 254 tokens for the 120-180 word target) or every system gets cut off before it can emit `<eos>`, which reads as truncation in the ratings. It also has to fit alongside the prompt: `block_size (640) - max_new_tokens (300) = 340` tokens of prompt budget, against a measured max rendered card of 223. `eval/generate_samples.py` enforces that and refuses to generate otherwise.
 

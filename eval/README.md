@@ -114,7 +114,9 @@ python eval/generate_samples.py --system ... \
 
 This reuses `FIXED_EVAL_DECODING` from `scripts/lab_gpt/generation.py` so
 every system is generated under identical decoding, and records each story's
-perplexity under its own generating model.
+perplexity under its own generating model. Pass `--seed` (default `0`) for
+reproducible sampling; each row stores `decoding.seed` and
+`decoding.sample_seed`.
 
 Two guards will stop a run rather than produce numbers that can't be compared:
 

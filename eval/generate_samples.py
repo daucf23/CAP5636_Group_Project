@@ -40,7 +40,13 @@ import sys
 
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.lab_gpt.generation import FIXED_EVAL_DECODING, generate_ids
+from scripts.lab_gpt.generation import (
+    FIXED_EVAL_DECODING,
+    FIXED_EVAL_SEED,
+    eval_sample_seed,
+    generate_ids,
+    make_generator,
+)
 from scripts.lab_gpt.model import GPT, GPTConfig, IGNORE_INDEX, build_model
 from scripts.lab_gpt.tokenizer_utils import load_tokenizer
 
@@ -139,6 +145,16 @@ def main() -> None:
     ap.add_argument("--prompts", type=Path, default=REPO_ROOT / "eval" / "prompts" / "eval_prompts.jsonl")
     ap.add_argument("--out", type=Path, required=True)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
+    ap.add_argument(
+        "--seed",
+        type=int,
+        default=FIXED_EVAL_SEED,
+        help=(
+            f"Base RNG seed for sampling (default {FIXED_EVAL_SEED}). "
+            "Each (system, prompt) gets a derived seed so regenerations are "
+            "order-independent and comparable across systems."
+        ),
+    )
     ap.add_argument("--allow-context-overflow", action="store_true",
                     help="Generate even if prompts exceed block_size - max_new_tokens (not comparable; debugging only)")
     args = ap.parse_args()
@@ -152,6 +168,7 @@ def main() -> None:
         raise SystemExit(f"Prompt pack mixes conditions {conditions}; generate one condition per run.")
     condition = conditions.pop()
     print(f"Prompts     : {len(prompts)} ({condition}) from {args.prompts}")
+    print(f"Eval seed   : {args.seed} (per-sample derived)")
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
     rows: List[Dict[str, Any]] = []
@@ -162,7 +179,12 @@ def main() -> None:
         check_context_budget(model, tokenizer, prompts, name, args.allow_context_overflow)
 
         for item in prompts:
-            all_ids, n_prompt = generate_ids(model, tokenizer, item["prompt"], FIXED_EVAL_DECODING, args.device)
+            sample_seed = eval_sample_seed(args.seed, name, item["id"])
+            generator = make_generator(args.device, sample_seed)
+            all_ids, n_prompt = generate_ids(
+                model, tokenizer, item["prompt"], FIXED_EVAL_DECODING, args.device,
+                generator=generator,
+            )
             story_ids = all_ids[n_prompt:]
             story = tokenizer.decode(story_ids)
             ppl = story_perplexity(model, tokenizer, all_ids, n_prompt, args.device)
@@ -183,6 +205,8 @@ def main() -> None:
                     "temperature": FIXED_EVAL_DECODING.temperature,
                     "top_p": FIXED_EVAL_DECODING.top_p,
                     "max_new_tokens": FIXED_EVAL_DECODING.max_new_tokens,
+                    "seed": args.seed,
+                    "sample_seed": sample_seed,
                 },
                 "generated_at": datetime.now(timezone.utc).isoformat(),
             })
