@@ -37,8 +37,8 @@ Each item is closed-world and scoreable:
 
 | Paper axis | Rubric scores |
 | --- | --- |
-| **Faithfulness** | Factual correctness (+ error tags: omission, contradiction, unconstrained invention) |
-| **Story quality** | Grammar, storytelling creativity, coherence (+ tags: encyclopedia dump, story domination) |
+| **Faithfulness** | Factual correctness |
+| **Story quality** | Grammar, storytelling creativity, coherence |
 
 ## Systems
 
@@ -80,14 +80,14 @@ Geometry for reported runs lives in YAML (`configs/b0_full.yaml`: 10L / 768d / 1
 
 ## Evaluation
 
-Primary claim is **blind human scoring** on the frozen 100-prompt `card` pack (fact card in context for all systems). Same decoding for every system via `FIXED_EVAL_DECODING` in `scripts/lab_gpt/generation.py`.
+Primary claim is **blind human scoring** on the frozen 100-prompt `card` pack (fact card in context for all systems). Same decoding for every system via `FIXED_EVAL_DECODING` in `scripts/lab_gpt/generation.py`, and sampling is seeded (`--seed`, default `0`) so a generation run can be reproduced story-for-story from the same checkpoints.
 
 | Piece | Where |
 | --- | --- |
 | Rubric + blind protocol | [`eval/rubric.md`](./eval/rubric.md) |
 | Build prompts / generate / score / aggregate | [`eval/README.md`](./eval/README.md) |
 | Main figure | Faithfulness vs story quality for B0 / B1 / M2 |
-| Error analysis | Omission, contradiction, unconstrained invention, encyclopedia dump, story domination |
+| Error analysis | Qualitative failure modes (omission, contradiction, unconstrained invention, encyclopedia dump, story domination). The rubric's per-story tag counts were dropped as too subjective for one rater — see [`eval/rubric.md`](./eval/rubric.md) |
 
 Supporting automatic metrics (length, self-perplexity) are secondary only — not a substitute for the rubric.
 
@@ -127,10 +127,13 @@ python eval/generate_samples.py \
   --system B1=results/b1_cpt_full_768/checkpoint.pt \
   --system M2=results/m2_sft_full_768/checkpoint.pt \
   --prompts eval/prompts/eval_prompts.jsonl \
-  --out eval/generations/run_YYYYMMDD.jsonl
+  --out eval/generations/run_YYYYMMDD.jsonl \
+  --seed 0
 streamlit run eval/app.py
 python eval/summarize_scores.py --generations eval/generations/run_YYYYMMDD.jsonl
 ```
+
+Seeds: training takes `--seed` (default `0`, set in the configs) and generation takes `--seed` (default `0`), from which each `(system, prompt)` derives its own sample seed — so regenerating one system leaves the others byte-identical, and prompt order does not matter. Every generated row records `decoding.seed` and `decoding.sample_seed`. Runs generated before seeding landed (the Jul-26 files under `eval/generations/` and `eval/snapshots/`) have no seed field and cannot be reproduced exactly; they are kept as-is because the human scores are tied to those exact stories.
 
 Full step checks (tokenizer warning, context budget, smoke path): [`TRAINING.md`](./TRAINING.md) and [`eval/README.md`](./eval/README.md).
 
@@ -170,7 +173,7 @@ Allowed for coding, debugging, and writing support. **Must** document tool + pur
 | Data (Lane A) | Done — 866 train / 235 eval / 866 SFT; schema frozen |
 | Training code (Lane B) | Done — configs + Stage 1/2 scripts; see `TRAINING.md` |
 | Eval harness (Lane C) | Done — prompt builder, generate, Streamlit scorer, summarize |
-| Human scoring | In progress — 60 / 100 primary (`card`) prompts scored |
+| Human scoring | In progress — 60 / 100 primary (`card`), 20 / 100 ablation (`nocard`) prompts scored |
 | Paper PDF / slides | In progress |
 | Lane owners → Contributions | Assign names before paper freeze |
 

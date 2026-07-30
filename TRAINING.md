@@ -115,11 +115,40 @@ M2 loads `data/fact_cards/train.jsonl` + `data/sft_pairs/train.jsonl` (approved,
 
 B1 packs raw Wikipedia text the same way Stage 1 packs TinyStories (no masking -- every token is a training target).
 
-Each run again writes `results/<run_id>/{config.yaml, metrics.json, RUN_CARD.md, samples/, checkpoint.pt}`. `RUN_CARD.md` prints the realized token budget (`max_steps * batch_size * block_size`) so mismatched B1/M2 budgets are easy to catch before reporting results.
+Each run again writes `results/<run_id>/{config.yaml, metrics.json, RUN_CARD.md, samples/, checkpoint.pt}`. `RUN_CARD.md` prints the token budget so mismatched B1/M2 budgets are easy to catch before reporting results.
+
+**What "matched budget" does and does not mean.** `tokens_seen` is
+`max_steps * batch_size * block_size` — nominal compute, identical for B1 and M2
+by construction (3000 x 8 x 640 = 15.4M). The two arms are *not* matched on
+anything else, and the paper should say so rather than imply equal supervision:
+
+| | B1 (CPT) | M2 (SFT) |
+| --- | --- | --- |
+| Window contents | packed Wikipedia, no padding | one card + story, padded to `block_size` |
+| Supervised tokens | every token | story + `<eos>` only (~195 of 640 median) |
+| Unique data | ~15.4M of a 40M-token cap, under one epoch | 866 pairs (~308k tokens), ~28 epochs |
+
+So B1 gets ~3x more supervised tokens and sees each one roughly once, while M2
+re-reads a small set many times. That is inherent to comparing CPT against SFT
+at equal steps — the fix is to report it, not to change the budget.
+
+## Seeds and reproducibility
+
+Both training scripts take `--seed` (default `0`, and set explicitly in every
+`configs/*.yaml`), seed CPU and all CUDA devices before the model is built, and
+record the seed in `results/<run_id>/config.yaml` and `RUN_CARD.md`. Same seed +
+same config + same data therefore gives the same init, the same shuffle order,
+and the same training-time sample previews.
+
+Bit-exact loss curves across *different* machines are not guaranteed: cuDNN
+kernel selection and GPU reduction order vary by hardware and driver. Treat the
+seed as "this run is re-runnable here", not as a cross-machine hash.
 
 ## Fixed decoding
 
-`scripts/lab_gpt/generation.py` exposes `FIXED_EVAL_DECODING` (temperature 0.85, top-p 0.9, `max_new_tokens=300`). Lane C's eval harness should import this rather than redefining decoding settings, so B0/B1/M2 are compared under identical decoding (README requirement).
+`scripts/lab_gpt/generation.py` exposes `FIXED_EVAL_DECODING` (temperature 0.85, top-p 0.9, `max_new_tokens=300`) and `FIXED_EVAL_SEED` (default `0`). Lane C's eval harness imports these rather than redefining decoding, so B0/B1/M2 are compared under identical settings.
+
+`eval/generate_samples.py --seed N` (default `0`) derives a per-`(system, prompt)` sample seed and records both in each JSONL row's `decoding` field. Regenerating without changing `--seed` should reproduce the same stories (same checkpoints + tokenizer).
 
 `max_new_tokens` must clear the gold story length (max 254 tokens for the 120-180 word target) or every system gets cut off before it can emit `<eos>`, which reads as truncation in the ratings. It also has to fit alongside the prompt: `block_size (640) - max_new_tokens (300) = 340` tokens of prompt budget, against a measured max rendered card of 223. `eval/generate_samples.py` enforces that and refuses to generate otherwise.
 

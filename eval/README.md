@@ -28,13 +28,12 @@ python eval/generate_samples.py \
   --prompts eval/prompts/eval_prompts.jsonl \
   --out eval/generations/run_$RUN.jsonl
 
-# 3. Score blind, by hand.
-#    Card ratings → eval/scores_card.csv (or eval/scores.csv)
+# 3. Score blind, by hand. The app opens on the newest `card` run by default;
+#    switch the sidebar to a *_nocard.jsonl file to score the ablation.
+#    Card ratings   → eval/scores_card.csv
 #    Nocard ratings → eval/scores_nocard.csv  (separate file — prompt ids overlap)
+#    Confirm the sidebar's Scores CSV matches the condition before saving.
 streamlit run eval/app.py
-#    Sidebar: pick eval/snapshots/20260726_card60/generations_nocard.jsonl
-#    (or eval/generations/run_20260726_nocard.jsonl — same bytes).
-#    Confirm Scores CSV is eval/scores_nocard.csv before saving.
 
 # 4. Aggregate the ratings into the paper's tables.
 python eval/summarize_scores.py --generations eval/generations/run_$RUN.jsonl
@@ -54,14 +53,13 @@ python eval/generate_samples.py \
 | --- | --- |
 | Step 1 | Each command prints `Wrote 100 ... prompts`; the `card` pack reports a max of ~223 tokens, inside the 340-token prompt budget |
 | Step 2 | 300 rows written (100 prompts × 3 systems), no context-budget error, and few stories hitting `max_new_tokens` |
-| Step 3 | Sidebar progress advances; apply error tags as you go (optional in the UI, required for the paper's error analysis) |
+| Step 3 | Sidebar progress advances; leave the error tags empty (see `rubric.md` — we dropped them as too subjective, and partial tagging would not be comparable) |
 | Step 4 | Condition line reads `card`, not `MIXED` |
 
-There are **100** frozen prompts. Scoring can be partial while drafting the paper; report the exact *n* you average. A dated freeze of generations + scores can live under `eval/snapshots/` (e.g. `20260726_card60` = 60 scored `card` prompts).
+There are **100** frozen prompts. Scoring can be partial while drafting the paper; report the exact *n* you average — currently **60/100** `card` prompts and **20/100** `nocard` prompts (plus the legacy 50-prompt Jul-25 bare-prompt pass, see §4). A dated freeze of generations + scores can live under `eval/snapshots/` (e.g. `20260726_card60` = 60 scored `card` prompts).
 
 Scoring is deliberately manual. Step 5's ablation is scored the same way, but
-keep it in a separate `scores.csv` (move the primary file aside first) so the
-two conditions never mix in one table.
+into `eval/scores_nocard.csv`, so the two conditions never mix in one table.
 
 ## 1. Eval prompts
 
@@ -114,7 +112,17 @@ python eval/generate_samples.py --system ... \
 
 This reuses `FIXED_EVAL_DECODING` from `scripts/lab_gpt/generation.py` so
 every system is generated under identical decoding, and records each story's
-perplexity under its own generating model.
+perplexity under its own generating model. Pass `--seed` (default `0`) for
+reproducible sampling; each row stores `decoding.seed` and
+`decoding.sample_seed`. The per-sample seed is derived from
+`(seed, system_id, prompt_id)`, so re-running one system reproduces its stories
+exactly without touching the others, and prompt order in the pack is irrelevant.
+
+> **The Jul-26 runs predate seeding.** `generations/run_20260726*.jsonl` and
+> everything under `snapshots/20260726_card60/` have no `decoding.seed` and
+> cannot be regenerated story-for-story. Do not overwrite them — the human
+> scores in `scores_card.csv` / `scores_nocard.csv` refer to those exact
+> stories. Any new run is seeded and reproducible.
 
 Two guards will stop a run rather than produce numbers that can't be compared:
 
@@ -151,11 +159,12 @@ a prompt; progress auto-resumes from the first unscored prompt on reload.
 Scores accumulate in a condition-specific CSV (schema in
 [`score_sheet_template.csv`](./score_sheet_template.csv)) — one row per
 `(prompt, system)`, with the real `system_id`, shown blind label, `card_id`,
-`condition`, all four Likert scores, optional error tags, and perplexity.
+`condition`, all four Likert scores, an (unused) error-tag column, and
+perplexity.
 
 | Condition | Generations | Scores file |
 | --- | --- | --- |
-| **card** (primary) | `eval/generations/run_*.jsonl` or snapshot `generations_card.jsonl` | `eval/scores_card.csv` (also mirrored as `eval/scores.csv`) |
+| **card** (primary) | `eval/generations/run_*.jsonl` or snapshot `generations_card.jsonl` | `eval/scores_card.csv` |
 | **nocard** (ablation) | snapshot `generations_nocard.jsonl` / `run_*_nocard.jsonl` | `eval/scores_nocard.csv` |
 
 Do **not** mix conditions in one scores file — prompt ids are shared. The app
@@ -164,6 +173,11 @@ refuses to append when the file’s condition doesn’t match the generations.
 `eval/scores_nocard_ablation.csv` is the older Jul-25 bare-prompt pass (50
 prompts, pre-`card_id`/`condition` columns). Prefer `scores_nocard.csv` for the
 Jul-26 snapshot nocard generations.
+
+`eval/scores.csv` (the pre-rename name for the card sheet) has been deleted — it
+was a stale duplicate of `scores_card.csv`. The app and `summarize_scores.py`
+both resolve to `scores_card.csv`, and the summarizer warns if a `scores.csv`
+ever reappears and disagrees with it.
 
 ## 5. Aggregate
 
@@ -179,7 +193,7 @@ python eval/summarize_scores.py --scores eval/scores_nocard.csv \
 python eval/summarize_scores.py --scores eval/scores_nocard_ablation.csv  # legacy Jul-25
 ```
 
-It prints per-system Likert means, the error-tag counts that feed the required
-error-analysis section, perplexity/length, and — with `--generations` — which
-prompt ids are still unscored. It warns instead of averaging silently when a
+It prints per-system Likert means, perplexity/length, and — with
+`--generations` — which prompt ids are still unscored. The error-tag table stays
+empty by design (see `rubric.md`). It warns instead of averaging silently when a
 scores file mixes `card` and `nocard` rows.

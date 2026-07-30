@@ -109,6 +109,8 @@ def _sft_eval_prompts(eval_cards_path: Path, templates: Dict[str, Any], k: int =
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
     torch.manual_seed(args.seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(args.seed)
 
     if args.mode is None:
         print("[error] --mode {cpt,sft} is required (CLI flag or --config yaml)", file=sys.stderr)
