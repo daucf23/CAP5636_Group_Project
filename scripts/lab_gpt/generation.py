@@ -46,9 +46,9 @@ def eval_sample_seed(base_seed: int, system_id: str, prompt_id: str) -> int:
 def make_generator(device: Union[str, torch.device], seed: int) -> torch.Generator:
     """Device-matched RNG for multinomial sampling."""
     dev = torch.device(device)
-    # CUDA multinomial wants a CUDA generator; CPU tensors want a CPU one.
-    gen_device = dev if dev.type == "cuda" else torch.device("cpu")
-    g = torch.Generator(device=gen_device)
+    # torch.multinomial requires the generator's device to match the probs
+    # tensor's (a CPU generator on a cuda/mps tensor raises at sample time).
+    g = torch.Generator(device=dev)
     g.manual_seed(int(seed))
     return g
 

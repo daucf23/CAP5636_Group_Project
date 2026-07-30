@@ -6,9 +6,9 @@ rater sees stories under randomized labels ("Model A", "Model B", ...), not
 real system ids, and automated perplexity is hidden until after a prompt's
 scores are saved.
 
-In the paper, **faithfulness** refers mainly to **Factual correctness** (plus
-error tags). **Story quality** refers to **Grammar**, **Storytelling
-creativity**, and **Coherence**.
+In the paper, **faithfulness** refers to **Factual correctness**. **Story
+quality** refers to **Grammar**, **Storytelling creativity**, and
+**Coherence**.
 
 ## Likert axes (1-5, score each system independently)
 
@@ -53,10 +53,14 @@ setting) is fine; invented *teaching claims* beyond the card are not.
 | 4 | Clear beginning/middle/end, logical flow |
 | 5 | Fully coherent, well-structured throughout |
 
-## Optional error tags
+## Error tags — not used
 
-Apply any that fit (multi-select, not mutually exclusive) — these feed the
-paper's required error-analysis section:
+The UI still offers these five tags, but we deliberately left them empty: with a
+single rater and no adjudication pass they proved too subjective to report as
+counts. The paper discusses failure modes qualitatively from the stories
+instead. Every rated row in `eval/scores_*.csv` has an empty `error_tags` field;
+treat a nonzero tag table from `summarize_scores.py` as a sign someone started
+tagging partway through, which would not be comparable across systems.
 
 - **Omission** — skips content a reader would expect the prompt to cover
 - **Contradiction** — asserts something, then contradicts it later in the same story
@@ -84,7 +88,8 @@ version of this column.
 
 - For each prompt, system order is shuffled deterministically (seeded by
   prompt id) and displayed as "Model A / Model B / ...".
-- The real `system_id` (B0/B1/M2/...) is written to `scores.csv` but never
-  shown in the scoring UI.
-- Analyze results by joining `scores.csv` on `system_id`, not on the shown
-  label (the shown label differs per prompt).
+- The real `system_id` (B0/B1/M2/...) is written to the condition's scores
+  file (`scores_card.csv` or `scores_nocard.csv`) but never shown in the
+  scoring UI.
+- Analyze results by joining that scores file on `system_id`, not on the
+  shown label (the shown label differs per prompt).

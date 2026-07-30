@@ -1,15 +1,19 @@
-"""Aggregate eval/scores.csv into the paper's tables (Lane C).
+"""Aggregate eval score CSVs into the paper's tables (Lane C).
 
 Rating stays manual; this only adds up what the raters saved, so the numbers in
 the paper are reproducible from a command instead of an ad-hoc spreadsheet.
+Defaults to eval/scores_card.csv (falls back to a legacy scores.csv only if
+the card file is missing).
 
 Prints, per system:
   * mean Likert score on each of the four rubric axes (+ n)
-  * error-tag counts (the paper's required error analysis)
   * perplexity and story length (supporting automatic metrics)
+  * error-tag counts, if any -- the project left these empty on purpose
+    (see eval/rubric.md), so this table is normally a no-op
 
 Usage:
     python eval/summarize_scores.py
+    python eval/summarize_scores.py --scores eval/scores_nocard.csv
     python eval/summarize_scores.py --scores eval/scores_nocard_ablation.csv
     python eval/summarize_scores.py --generations eval/generations/run_20260726.jsonl
 """
@@ -24,7 +28,13 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_SCORES = REPO_ROOT / "eval" / "scores.csv"
+EVAL_DIR = REPO_ROOT / "eval"
+# Must match eval/app.py's default_scores_path("card"): the app writes card
+# ratings to scores_card.csv when it exists, so defaulting to the legacy
+# scores.csv here would silently report stale numbers.
+CARD_SCORES = EVAL_DIR / "scores_card.csv"
+LEGACY_SCORES = EVAL_DIR / "scores.csv"
+DEFAULT_SCORES = CARD_SCORES if CARD_SCORES.exists() else LEGACY_SCORES
 
 AXES = ["grammar", "factual_correctness", "storytelling_creativity", "coherence"]
 ERROR_TAGS = [
@@ -87,6 +97,14 @@ def main() -> None:
     if not rows:
         raise SystemExit(f"{args.scores} has no rows yet.")
 
+    if CARD_SCORES.exists() and LEGACY_SCORES.exists():
+        if CARD_SCORES.read_bytes() != LEGACY_SCORES.read_bytes():
+            print(
+                f"[warn] {CARD_SCORES.name} and {LEGACY_SCORES.name} both exist and differ. "
+                f"The scoring app writes to {CARD_SCORES.name}; delete the stale copy "
+                "before reporting numbers.\n"
+            )
+
     conditions = {(r.get("condition") or "unlabeled") for r in rows}
     systems = sorted({r["system_id"] for r in rows})
     prompts = {r["prompt_id"] for r in rows}
@@ -139,10 +157,9 @@ def main() -> None:
                 tag_counts[r["system_id"]][tag] += 1
 
     if not tagged:
-        print("No error tags recorded on any of "
-              f"{len(rows)} rows. The rubric's five tags feed the paper's required")
-        print("error-analysis section -- they are optional in the UI, so a rater has to")
-        print("apply them deliberately while scoring.")
+        print(f"No error tags on any of {len(rows)} rows -- expected. The project")
+        print("dropped tag counts as too subjective for a single rater and discusses")
+        print("failure modes qualitatively instead; see eval/rubric.md.")
     else:
         table = []
         for system in systems:
@@ -150,6 +167,8 @@ def main() -> None:
             table.append([system, *(str(counts.get(tag, 0)) for tag in ERROR_TAGS)])
         print_table(["system", *ERROR_TAGS], table)
         print(f"\n{tagged}/{len(rows)} rated stories carry at least one tag.")
+        print("[warn] Tagging was meant to be skipped entirely (eval/rubric.md).")
+        print("Partial tagging is not comparable across systems -- do not report these.")
 
     if args.generations:
         gen_prompts = set()

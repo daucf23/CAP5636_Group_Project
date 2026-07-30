@@ -8,8 +8,9 @@ eval/rubric.md, and appends one row per system per prompt to a scores CSV.
 Keep card and nocard ratings in SEPARATE score files — same prompt ids are
 reused across conditions. Defaults:
 
-  card   generations → eval/scores_card.csv   (or eval/scores.csv)
+  card   generations → eval/scores_card.csv
   nocard generations → eval/scores_nocard.csv
+  (no condition)     → eval/scores_unlabeled.csv
 
 Run with: streamlit run eval/app.py
 """
@@ -47,8 +48,28 @@ SCORE_FIELDS = [
     "system_id", "story_text", "grammar", "factual_correctness",
     "storytelling_creativity", "coherence", "error_tags", "perplexity", "num_tokens",
 ]
+# Minimum keys a row needs to be scoreable, so prompt packs sitting in the same
+# snapshot directory are not offered as generations.
+GENERATION_FIELDS = {"prompt_id", "system_id", "story_text"}
 
 st.set_page_config(page_title="LLM Story Eval", layout="wide")
+
+
+def peek_row(path: Path) -> Dict[str, Any]:
+    """First non-empty JSON object in a jsonl file, or {} if there is none."""
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            for line in f:
+                line = line.strip()
+                if line:
+                    return json.loads(line)
+    except (OSError, json.JSONDecodeError):
+        return {}
+    return {}
+
+
+def is_generations_file(path: Path) -> bool:
+    return GENERATION_FIELDS <= set(peek_row(path))
 
 
 def discover_generations_files() -> List[Path]:
@@ -58,9 +79,10 @@ def discover_generations_files() -> List[Path]:
         files.extend(GENERATIONS_DIR.glob("*.jsonl"))
     if SNAPSHOTS_DIR.exists():
         files.extend(SNAPSHOTS_DIR.glob("*/*.jsonl"))
+    files = [p for p in set(files) if is_generations_file(p)]
     # Prefer real runs over the UI dry-run placeholder.
     files = [p for p in files if p.name != "placeholder.jsonl" or len(files) == 1]
-    return sorted(set(files), key=lambda p: p.stat().st_mtime, reverse=True)
+    return sorted(files, key=lambda p: p.stat().st_mtime, reverse=True)
 
 
 def default_scores_path(condition: str) -> Path:
@@ -71,17 +93,13 @@ def default_scores_path(condition: str) -> Path:
         card = EVAL_DIR / "scores_card.csv"
         legacy = EVAL_DIR / "scores.csv"
         return card if card.exists() else legacy
-    return EVAL_DIR / "scores.csv"
+    # Generations with no condition (the legacy Jul-24 pack) get their own sheet
+    # rather than landing in the card file.
+    return EVAL_DIR / "scores_unlabeled.csv"
 
 
 def peek_condition(path: Path) -> str:
-    with path.open("r", encoding="utf-8") as f:
-        for line in f:
-            line = line.strip()
-            if not line:
-                continue
-            return str(json.loads(line).get("condition") or "")
-    return ""
+    return str(peek_row(path).get("condition") or "")
 
 
 @st.cache_data
@@ -158,12 +176,9 @@ def main() -> None:
     st.title("LLM Story Output — Blind Human Evaluation")
 
     candidates = discover_generations_files()
-    preferred = next(
-        (p for p in candidates if "nocard" in p.name and "20260726_card60" in str(p)),
-        None,
-    )
-    if preferred is None:
-        preferred = next((p for p in candidates if "nocard" in p.name), None)
+    # Default to the newest primary (card) run; the ablation is a deliberate
+    # sidebar choice, not something a rater should land on by accident.
+    preferred = next((p for p in candidates if peek_condition(p) == "card"), None)
     if preferred is None and candidates:
         preferred = candidates[0]
 
@@ -196,6 +211,15 @@ def main() -> None:
         )
         return
 
+    if not is_generations_file(path):
+        st.error(
+            f"`{path.name}` is not a generations file — rows need "
+            f"`{', '.join(sorted(GENERATION_FIELDS))}`.\n\n"
+            "Prompt packs (`prompts_*.jsonl`, `eval_prompts*.jsonl`) are inputs to "
+            "`generate_samples.py`, not something to score."
+        )
+        return
+
     condition = peek_condition(path)
     suggested_scores = default_scores_path(condition)
 
@@ -209,6 +233,13 @@ def main() -> None:
         if not scores_path.is_absolute():
             scores_path = REPO_ROOT / scores_path
         st.caption(f"Condition in file: `{condition or 'unknown'}`")
+
+    if not condition:
+        st.warning(
+            f"`{path.name}` predates the `condition` field (legacy Jul-24 pack). "
+            "Its rows would be saved unlabeled and could mix into a card or nocard "
+            "sheet — point Scores CSV at a dedicated file before scoring it."
+        )
 
     stale = stale_score_header(scores_path)
     if stale is not None:
@@ -311,7 +342,8 @@ def main() -> None:
                     key=f"{path.name}_{prompt_id}_{system_id}_{field}",
                 )
             values["error_tags"] = st.multiselect(
-                "Error tags (optional)", options=ERROR_TAGS,
+                "Error tags (leave empty — unused; see rubric.md)",
+                options=ERROR_TAGS,
                 key=f"{path.name}_{prompt_id}_{system_id}_tags",
             )
             responses[system_id] = values

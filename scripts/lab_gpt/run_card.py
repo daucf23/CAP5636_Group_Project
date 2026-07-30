@@ -62,6 +62,7 @@ def write_run_card(
         f"- **Tokens seen**: {tokens_seen:,}" if tokens_seen is not None else "- **Tokens seen**: n/a",
         f"- **Wall time**: {wall_s:.0f}s" if wall_s is not None else "- **Wall time**: n/a",
         f"- **Final loss / ppl**: {metrics.get('final_loss')} / {metrics.get('final_ppl')}",
+        f"- **Seed**: {config.get('seed', 'n/a')}",
     ]
     if metrics.get("val_loss") is not None:
         lines.append(f"- **Held-out TinyStories val loss**: {metrics['val_loss']}")
